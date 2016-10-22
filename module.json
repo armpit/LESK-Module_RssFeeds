@@ -1,0 +1,9 @@
+{
+	"name": "RSS Feed",
+	"slug": "rssfeeds",
+	"namespace": "RssFeeds",
+	"version": "0.1",
+	"author": "Armpit",
+	"license": "ISC",
+	"description": "Basic RSS feed manager."
+}
