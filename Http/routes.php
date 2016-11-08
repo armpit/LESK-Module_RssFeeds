@@ -51,12 +51,11 @@ Route::group(['middleware' => 'authorize'], function () {
 
     // rssfeeds routes
     Route::group(['prefix' => 'rssfeeds'], function () {
-        //Route::get( '/',      ['as' => 'rssfeeds.home',   'uses' => 'RssFeedsController@index']);
-        Route::get( '/manage',   ['as' => 'rssfeeds.manage',  'uses' => 'RssFeedsController@manage']);
-        Route::get( '/add',      ['as' => 'rssfeeds.add',     'uses' => 'RssFeedsController@add']);
-        Route::get( '/delete',   ['as' => 'rssfeeds.delete',  'uses' => 'RssFeedsController@delete']);
-        Route::get( '/edit',     ['as' => 'rssfeeds.edit',    'uses' => 'RssFeedsController@edit']);
-        Route::post( '/process', ['as' => 'rssfeeds.process', 'uses' => 'RssFeedsController@process']);
+        Route::get( '/manage',      ['as' => 'rssfeeds.manage',  'uses' => 'RssFeedsController@manage']);
+        Route::get( '/add',         ['as' => 'rssfeeds.add',     'uses' => 'RssFeedsController@add']);
+        Route::get( '/delete/{id}', ['as' => 'rssfeeds.delete',  'uses' => 'RssFeedsController@delete']);
+        Route::get( '/edit/{id}',   ['as' => 'rssfeeds.edit',    'uses' => 'RssFeedsController@edit']);
+        Route::post( '/process',    ['as' => 'rssfeeds.process', 'uses' => 'RssFeedsController@process']);
     });
 
 });
