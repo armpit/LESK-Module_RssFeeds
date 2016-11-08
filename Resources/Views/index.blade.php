@@ -1,8 +1,29 @@
 @extends('layouts.master')
 
 @section('content')
-    <h1>RSS Feeds</h1>
-    <div class="box-body">
-    Rss feeds will be here.
-    </div>
+
+    @if(Auth::user() && (Auth::user()->hasRole('rssfeeds-manager') || Auth::user()->hasRole('admins')))
+        <a href="rssfeeds/manage" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.manage') }}</a>
+    @endif
+
+    <div class='row'>
+        <div class='col-md-12'>
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ trans('rssfeeds::general.page.index.box-title') }}</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+
+                    </div><!-- /.form-group -->
+
+                </div><!-- /.box-body -->
+
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+
+    </div><!-- /.row -->
 @endsection

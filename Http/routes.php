@@ -28,11 +28,10 @@
 | and give it the Closure to execute when that URI is requested.
 |
 */
-//Route::group(['prefix' => 'rssfeeds'], function() {
-//	Route::get('/', function() {
-//		dd('This is the rssfeeds module index page.');
-//	});
-//});
+Route::group(['prefix' => 'rssfeeds'], function() {
+    Route::get( '/',  ['as' => 'rssfeeds.home', 'uses' => 'RssFeedsController@index']);
+});
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -52,7 +51,12 @@ Route::group(['middleware' => 'authorize'], function () {
 
     // rssfeeds routes
     Route::group(['prefix' => 'rssfeeds'], function () {
-        Route::get( '/',    ['as' => 'rssfeeds.home', 'uses' => 'RssFeedsController@index']);
+        //Route::get( '/',      ['as' => 'rssfeeds.home',   'uses' => 'RssFeedsController@index']);
+        Route::get( '/manage',   ['as' => 'rssfeeds.manage',  'uses' => 'RssFeedsController@manage']);
+        Route::get( '/add',      ['as' => 'rssfeeds.add',     'uses' => 'RssFeedsController@add']);
+        Route::get( '/delete',   ['as' => 'rssfeeds.delete',  'uses' => 'RssFeedsController@delete']);
+        Route::get( '/edit',     ['as' => 'rssfeeds.edit',    'uses' => 'RssFeedsController@edit']);
+        Route::post( '/process', ['as' => 'rssfeeds.process', 'uses' => 'RssFeedsController@process']);
     });
 
 });
