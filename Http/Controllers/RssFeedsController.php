@@ -79,7 +79,7 @@ class RssFeedsController extends Controller
                 $data[$x] = RssFeedsUtils::getFeed($feed['feed_url']);
 
                 // trim items
-                //$data[$x]['items'] = array_slice($data[$x]['items'], $feed['feed_items'], count($data[$x]['items']));
+                $data[$x]['items'] = array_slice($data[$x]['items'], 0, $feed['feed_items']);
 
                 // Only increment our counter if the feed had items.
                 if (count($data[$x]['items']) > 0)
