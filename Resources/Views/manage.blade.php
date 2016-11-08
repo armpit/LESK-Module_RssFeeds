@@ -28,17 +28,21 @@
                         </tr>
 
                         @foreach($feeds as $feed)
-                        <tr>
+                        <tr style="border-bottom: 1px #000 solid;">
                             <td>{{ $feed['feed_name'] }}</td>
                             <td>{{ $feed['feed_url'] }}</td>
                             <td>{{ $feed['feed_items'] }}</td>
                             <td>{{ $feed['feed_interval'] }}</td>
                             <td>{{ date('m/d/Y H:i:s', $feed['feed_lastcheck']) }}</td>
-                            <td>{{ $feed['feed_active'] }}</td>
                             <td>
-                                <a href="edit/{{ $feed['id'] }}">EDIT</a>
-                                &nbsp;&nbsp;
-                                <a href="delete/{{ $feed['id'] }}">DELETE</a>
+                                @if($feed['feed_active'] == 1)
+                                    <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+                                @endif
+                            </td>
+                            <td>
+                                <a href="edit/{{ $feed['id'] }}" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.edit') }}</a>
+                                |
+                                <a href="delete/{{ $feed['id'] }}" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.delete') }}</a>
                             </td>
                         </tr>
                         @endforeach

@@ -38,16 +38,18 @@ return [
     'status' => [
         'error-adding-feed'       => 'Could not add feed.',
         'success-feed-added'      => 'Feed added to database.',
+        'error-deleting-feed'     => 'Could not delete feed.',
+        'success-feed-deleted'    => 'Feed deleted from database.',
     ],
 
     'button' => [
         'cancel'    => 'Cancel',
         'back'      => 'Back',
-        'edit'      => 'Edit Feed',
+        'edit'      => 'Edit',
+        'delete'    => 'Delete',
         'save'      => 'Save',
         'manage'    => 'Manage Feeds',
         'add'       => 'Add Feed',
-        'delete'    => 'Delete Feed',
     ],
 
     'action' => [

@@ -18,6 +18,11 @@
                 <div class="box-body">
                     <div class="form-group">
 
+                        @foreach($data as $feed)
+                            <img src="{{ $feed['image'] }}" alt="{{ $feed['title'] }}" height="100px" />
+                            <b>{{ $feed['title'] }}</b> - {{$feed['description'] }}<br />
+                        @endforeach
+
                     </div><!-- /.form-group -->
 
                 </div><!-- /.box-body -->

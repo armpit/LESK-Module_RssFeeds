@@ -52,7 +52,7 @@
                         <b>Feed Active:</b><br />
                         {!! Form::select(
                             'txtActive',
-                            ['True', 'False'],
+                            ['False', 'True'],
                             '',
                             ['style' => 'width:250px;', 'id' => 'txtActive'])
                         !!}

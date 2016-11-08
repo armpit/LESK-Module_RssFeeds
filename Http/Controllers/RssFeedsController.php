@@ -21,6 +21,7 @@
 namespace App\Modules\RssFeeds\Http\Controllers;
 
 use App\Modules\RssFeeds\Models\FeedsModel;
+use App\Modules\RssFeeds\Utils\RssFeedsUtils;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -68,7 +69,25 @@ class RssFeedsController extends Controller
         $page_title = trans('rssfeeds::general.page.index.title');
         $page_description = trans('rssfeeds::general.page.index.description');
 
-        return view('rssfeeds::index', compact('page_title', 'page_description'));
+        $feed_list = self::getFeeds();
+        $feeds = $feed_list->toArray();
+
+        $x = 0;
+        foreach ($feeds as $feed) {
+            // Only grab active feeds.
+            if ($feed['feed_active'] == 1) {
+                $data[$x] = RssFeedsUtils::getFeed($feed['feed_url']);
+
+                // trim items
+                //$data[$x]['items'] = array_slice($data[$x]['items'], $feed['feed_items'], count($data[$x]['items']));
+
+                // Only increment our counter if the feed had items.
+                if (count($data[$x]['items']) > 0)
+                    $x++;
+            }
+        }
+
+        return view('rssfeeds::index', compact('page_title', 'page_description', 'data'));
     }
 
 
@@ -109,14 +128,31 @@ class RssFeedsController extends Controller
      * Delete a feed.
      *
      * @param Request $request
+     * @param Int $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public static function delete(Request $request)
+    public static function delete(Request $request, $id)
     {
-        $page_title = trans('rssfeeds::general.page.delete.title');
-        $page_description = trans('rssfeeds::general.page.delete.description');
+        $page_title = trans('rssfeeds::general.page.manage.title');
+        $page_description = trans('rssfeeds::general.page.manage.description');
 
-        return view('rssfeeds::delete', compact('page_title', 'page_description'));
+        $feed_list = self::getFeeds();
+        $feeds = $feed_list->toArray();
+
+        try {
+            $model = new FeedsModel();
+            $model->find($id);
+            $model->delete();
+
+            Flash::success(trans('rssfeeds::general.status.success-feed-deleted'));
+            return view('rssfeeds::manage', compact('page_title', 'page_description', 'feeds'));
+
+        } catch (Exception $ex) {
+            Log::error('Exception deleting RSS feed: ' . $ex->getMessage());
+            Log::error($ex->getTraceAsString());
+            Flash::error(trans('rssfeeds::general.status.error-deleting-feed'));
+            return view('rssfeeds::manage', compact('page_title', 'page_description', 'feeds'));
+        }
     }
 
 
@@ -191,6 +227,12 @@ class RssFeedsController extends Controller
         }
     }
 
+
+    /**
+     * Get all feeds from database.
+     *
+     * @return mixed
+     */
     public static function getFeeds()
     {
         $feeds = FeedsModel::all();
