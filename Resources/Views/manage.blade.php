@@ -36,9 +36,9 @@
                             <td>{{ date('m/d/Y H:i:s', $feed['feed_lastcheck']) }}</td>
                             <td>
                                 @if($feed['feed_active'] == 1)
-                                    <i class="fa fa-check-circle-o" aria-hidden="true" style="color: #00ff00;"></i>
+                                    <a href="deactivate/{{ $feed['id'] }}"><i class="fa fa-check-circle-o" aria-hidden="true" style="color: #00ff00;"></i></a>
                                 @else
-                                    <i class="fa fa-check-circle-o" aria-hidden="true" style="color: #ff0000;"></i>
+                                    <a href="activate/{{ $feed['id'] }}"><i class="fa fa-check-circle-o" aria-hidden="true" style="color: #ff0000;"></i></a>
                                 @endif
                             </td>
                             <td>

@@ -26,14 +26,19 @@ use App\Modules\RssFeeds\Utils\RssFeedsUtils;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Flash;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Routing\Redirector;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\AuditRepository as Audit;
 use Auth;
 use App\Models\Setting;
 use App\User;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Facades\Redirect;
+
 
 class RssFeedsController extends Controller
 {
@@ -45,6 +50,7 @@ class RssFeedsController extends Controller
      */
     protected $app;
 
+    private static $feeds;
 
     /**
      * Custom constructor to get a handle on the Application instance.
@@ -55,6 +61,9 @@ class RssFeedsController extends Controller
     {
         parent::__construct($app, $audit, "rssfeeds");
         $this->app = $app;
+
+        $feed_list = self::getFeeds();
+        self::$feeds = $feed_list->toArray();
     }
 
 
@@ -146,8 +155,8 @@ class RssFeedsController extends Controller
 
             Flash::success(trans('rssfeeds::general.status.success-feed-deleted'));
             return view('rssfeeds::manage', compact('page_title', 'page_description', 'feeds'));
-
-        } catch (Exception $ex) {
+        }
+        catch (Exception $ex) {
             Log::error('Exception deleting RSS feed: ' . $ex->getMessage());
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-deleting-feed'));
@@ -199,6 +208,54 @@ class RssFeedsController extends Controller
 
 
     /**
+     * Activate a feed.
+     *
+     * @param $id
+     * @return Redirect
+     */
+    public static function activate($id)
+    {
+        $feeds = self::$feeds;
+        try {
+            $model = FeedsModel::find($id);
+            $model->feed_active = 1;
+            $model->save();
+            Flash::success(trans('rssfeeds::general.status.success-feed-activated'));
+        }
+        catch (Exception $ex) {
+            Log::error('Exception deleting RSS feed: ' . $ex->getMessage());
+            Log::error($ex->getTraceAsString());
+            Flash::error(trans('rssfeeds::general.status.error-activating-feed'));
+        }
+        return redirect('rssfeeds/manage');
+    }
+
+
+    /**
+     * Deactivate a feed.
+     *
+     * @param $id
+     * @return Redirect
+     */
+    public static function deactivate($id)
+    {
+        $feeds = self::$feeds;
+        try {
+            $model = FeedsModel::find($id);
+            $model->feed_active = 0;
+            $model->save();
+            Flash::success(trans('rssfeeds::general.status.success-feed-deactivated'));
+        }
+        catch (Exception $ex) {
+            Log::error('Exception deleting RSS feed: ' . $ex->getMessage());
+            Log::error($ex->getTraceAsString());
+            Flash::error(trans('rssfeeds::general.status.error-deactivating-feed'));
+        }
+        return redirect('rssfeeds/manage');
+    }
+
+
+    /**
      * Add RSS feed to the database.
      *
      * @param $query
@@ -208,7 +265,6 @@ class RssFeedsController extends Controller
     {
         try {
             $model = new FeedsModel();
-
             $model->feed_name = $query['txtName'];
             $model->feed_url = $query['txtUrl'];
             $model->feed_active = $query['txtActive'];
@@ -218,8 +274,8 @@ class RssFeedsController extends Controller
             $model->save();
 
             return;
-
-        } catch (Exception $ex) {
+        }
+        catch (Exception $ex) {
             Log::error('Exception updating RSS feed: ' . $ex->getMessage());
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-adding-feed'));

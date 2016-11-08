@@ -94,6 +94,16 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
                 'App\Modules\RssFeeds\Http\Controllers\RssFeedsController@process',
                 $permManage );
 
+            $activateProcess = self::createRoute( 'rssfeeds.activate',
+                'rssfeeds/activate/{id}',
+                'App\Modules\RssFeeds\Http\Controllers\RssFeedsController@activate',
+                $permManage );
+
+            $deactivateProcess = self::createRoute( 'rssfeeds.deactivate',
+                'rssfeeds/deactivate/{id}',
+                'App\Modules\RssFeeds\Http\Controllers\RssFeedsController@deactivate',
+                $permManage );
+
             // ----- Create menu item
             $menuRssFeeds = self::createMenu( 'rssfeeds', 'RSS Feeds', 20, 'fa fa-feed', $menuHome, false,  $routeHome, $permOpenToAll );
         }); // End of DB::transaction(....)

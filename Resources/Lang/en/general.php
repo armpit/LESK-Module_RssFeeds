@@ -36,10 +36,14 @@ return [
     ],
 
     'status' => [
-        'error-adding-feed'       => 'Could not add feed.',
-        'success-feed-added'      => 'Feed added to database.',
-        'error-deleting-feed'     => 'Could not delete feed.',
-        'success-feed-deleted'    => 'Feed deleted from database.',
+        'error-adding-feed'         => 'Could not add feed.',
+        'success-feed-added'        => 'Feed added to database.',
+        'error-deleting-feed'       => 'Could not delete feed.',
+        'success-feed-deleted'      => 'Feed deleted from database.',
+        'success-activating-feed'   => 'Could not activate feed.',
+        'success-feed-activated'    => 'Feed activated.',
+        'success-deactivating-feed' => 'Could not deactivate feed.',
+        'success-feed-deactivated'  => 'Feed deactivated.',
     ],
 
     'button' => [
