@@ -42,15 +42,19 @@ use Illuminate\Support\Facades\Redirect;
 
 class RssFeedsController extends Controller
 {
-
     /**
      * The application instance.
      *
      * @var \Illuminate\Contracts\Foundation\Application
      */
     protected $app;
-
+    /**
+     * Accessor for the feed info from DB.
+     *
+     * @var array
+     */
     private static $feeds;
+
 
     /**
      * Custom constructor to get a handle on the Application instance.
@@ -78,8 +82,9 @@ class RssFeedsController extends Controller
         $page_title = trans('rssfeeds::general.page.index.title');
         $page_description = trans('rssfeeds::general.page.index.description');
 
-        $feed_list = self::getFeeds();
-        $feeds = $feed_list->toArray();
+//        $feed_list = self::getFeeds();
+//        $feeds = $feed_list->toArray();
+        $feeds = self::$feeds;
 
         $x = 0;
         foreach ($feeds as $feed) {
@@ -110,10 +115,9 @@ class RssFeedsController extends Controller
     {
         $page_title = trans('rssfeeds::general.page.manage.title');
         $page_description = trans('rssfeeds::general.page.manage.description');
-
-        $feed_list = self::getFeeds();
-        $feeds = $feed_list->toArray();
-
+//        $feed_list = self::getFeeds();
+//        $feeds = $feed_list->toArray();
+        $feeds = self::$feeds;
         return view('rssfeeds::manage', compact('page_title', 'page_description', 'feeds'));
     }
 
@@ -128,7 +132,6 @@ class RssFeedsController extends Controller
     {
         $page_title = trans('rssfeeds::general.page.add.title');
         $page_description = trans('rssfeeds::general.page.add.description');
-
         return view('rssfeeds::add', compact('page_title', 'page_description'));
     }
 
@@ -138,30 +141,23 @@ class RssFeedsController extends Controller
      *
      * @param Request $request
      * @param Int $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return redirect
      */
     public static function delete(Request $request, $id)
     {
         $page_title = trans('rssfeeds::general.page.manage.title');
         $page_description = trans('rssfeeds::general.page.manage.description');
 
-        $feed_list = self::getFeeds();
-        $feeds = $feed_list->toArray();
-
         try {
-            $model = new FeedsModel();
-            $model->find($id);
-            $model->delete();
-
+            FeedsModel::destroy($id);
             Flash::success(trans('rssfeeds::general.status.success-feed-deleted'));
-            return view('rssfeeds::manage', compact('page_title', 'page_description', 'feeds'));
         }
         catch (Exception $ex) {
             Log::error('Exception deleting RSS feed: ' . $ex->getMessage());
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-deleting-feed'));
-            return view('rssfeeds::manage', compact('page_title', 'page_description', 'feeds'));
         }
+        return redirect('rssfeeds/manage');
     }
 
 
@@ -174,7 +170,6 @@ class RssFeedsController extends Controller
     {
         $page_title = trans('rssfeeds::general.page.edit.title');
         $page_description = trans('rssfeeds::general.page.edit.description');
-
         return view('rssfeeds::edit', compact('page_title', 'page_description'));
     }
 
@@ -183,7 +178,7 @@ class RssFeedsController extends Controller
      * Process management actions.
      *
      * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return redirect
      */
     public static function process(Request $request)
     {
@@ -192,18 +187,9 @@ class RssFeedsController extends Controller
         // ----- Add new feed
         if (isset($query['action']) && $query['action'] == 'add') {
             self::addFeed($query);
-
-            $feed_list = self::getFeeds();
-            $feeds = $feed_list->toArray();
-
             Flash::success(trans('rssfeeds::general.status.success-feed-added'));
-
-            $page_title = trans('rssfeeds::general.page.manage.title');
-            $page_description = trans('rssfeeds::general.page.manage.description');
-
-            return view('rssfeeds::manage', compact('page_title', 'page_description', 'feeds'));
         }
-
+        return redirect('rssfeeds/manage');
     }
 
 
@@ -215,7 +201,6 @@ class RssFeedsController extends Controller
      */
     public static function activate($id)
     {
-        $feeds = self::$feeds;
         try {
             $model = FeedsModel::find($id);
             $model->feed_active = 1;
@@ -239,7 +224,6 @@ class RssFeedsController extends Controller
      */
     public static function deactivate($id)
     {
-        $feeds = self::$feeds;
         try {
             $model = FeedsModel::find($id);
             $model->feed_active = 0;
@@ -259,7 +243,7 @@ class RssFeedsController extends Controller
      * Add RSS feed to the database.
      *
      * @param $query
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return redirect
      */
     public static function addFeed($query)
     {
@@ -279,7 +263,7 @@ class RssFeedsController extends Controller
             Log::error('Exception updating RSS feed: ' . $ex->getMessage());
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-adding-feed'));
-            return view('rssfeeds::add', compact('page_title', 'page_description'));
+            return redirect('rssfeeds/manage');
         }
     }
 
