@@ -82,6 +82,9 @@ class RssFeedsController extends Controller
      */
     public function index(Request $request)
     {
+        // Initialize $data in case there are no feeds.
+        $data = array();
+
         $page_title = trans('rssfeeds::general.page.index.title');
         $page_description = trans('rssfeeds::general.page.index.description');
         $feeds = self::$feeds;
