@@ -36,6 +36,7 @@ return [
     ],
 
     'status' => [
+        'error-no-feeds'            => 'There are no feeds configured.',
         'error-adding-feed'         => 'Could not add feed.',
         'success-feed-added'        => 'Feed added to database.',
         'error-updating-feed'       => 'Could not update feed.',
