@@ -20,11 +20,14 @@
 
 namespace App\Modules\RssFeeds\Http\Controllers;
 
+use App\Facades\MenuBuilderFacade;
+use App\Managers\MenuBuilderManager;
 use App\Modules\RssFeeds\Models\FeedsModel;
 use App\Modules\RssFeeds\Utils\RssFeedsUtils;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Providers\MenuBuilderServiceProvider;
 use Flash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -115,8 +118,6 @@ class RssFeedsController extends Controller
     {
         $page_title = trans('rssfeeds::general.page.manage.title');
         $page_description = trans('rssfeeds::general.page.manage.description');
-//        $feed_list = self::getFeeds();
-//        $feeds = $feed_list->toArray();
         $feeds = self::$feeds;
         return view('rssfeeds::manage', compact('page_title', 'page_description', 'feeds'));
     }
@@ -145,9 +146,6 @@ class RssFeedsController extends Controller
      */
     public static function delete(Request $request, $id)
     {
-        $page_title = trans('rssfeeds::general.page.manage.title');
-        $page_description = trans('rssfeeds::general.page.manage.description');
-
         try {
             FeedsModel::destroy($id);
             Flash::success(trans('rssfeeds::general.status.success-feed-deleted'));
