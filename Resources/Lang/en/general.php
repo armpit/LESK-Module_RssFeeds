@@ -38,6 +38,8 @@ return [
     'status' => [
         'error-adding-feed'         => 'Could not add feed.',
         'success-feed-added'        => 'Feed added to database.',
+        'error-updating-feed'       => 'Could not update feed.',
+        'success-feed-updated'      => 'Feed updated.',
         'error-deleting-feed'       => 'Could not delete feed.',
         'success-feed-deleted'      => 'Feed deleted from database.',
         'success-activating-feed'   => 'Could not activate feed.',

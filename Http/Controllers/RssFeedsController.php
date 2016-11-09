@@ -84,9 +84,6 @@ class RssFeedsController extends Controller
     {
         $page_title = trans('rssfeeds::general.page.index.title');
         $page_description = trans('rssfeeds::general.page.index.description');
-
-//        $feed_list = self::getFeeds();
-//        $feeds = $feed_list->toArray();
         $feeds = self::$feeds;
 
         $x = 0;
@@ -94,10 +91,8 @@ class RssFeedsController extends Controller
             // Only grab active feeds.
             if ($feed['feed_active'] == 1) {
                 $data[$x] = RssFeedsUtils::getFeed($feed['feed_url']);
-
                 // trim items
                 $data[$x]['items'] = array_slice($data[$x]['items'], 0, $feed['feed_items']);
-
                 // Only increment our counter if the feed had items.
                 if (count($data[$x]['items']) > 0)
                     $x++;
@@ -164,11 +159,12 @@ class RssFeedsController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public static function edit()
+    public static function edit($id)
     {
+        $data = FeedsModel::find($id)->toArray();
         $page_title = trans('rssfeeds::general.page.edit.title');
         $page_description = trans('rssfeeds::general.page.edit.description');
-        return view('rssfeeds::edit', compact('page_title', 'page_description'));
+        return view('rssfeeds::edit', compact('page_title', 'page_description', 'data'));
     }
 
 
@@ -181,11 +177,13 @@ class RssFeedsController extends Controller
     public static function process(Request $request)
     {
         $query = $request->input();
-
-        // ----- Add new feed
-        if (isset($query['action']) && $query['action'] == 'add') {
-            self::addFeed($query);
-            Flash::success(trans('rssfeeds::general.status.success-feed-added'));
+        if (isset($query['action'])) {
+            if ($query['action'] == 'add') {
+                self::addFeed($query);
+            }
+            if ($query['action'] == 'edit') {
+                self::updateFeed($query);
+            }
         }
         return redirect('rssfeeds/manage');
     }
@@ -254,15 +252,43 @@ class RssFeedsController extends Controller
             $model->feed_interval = $query['txtInterval'];
             $model->feed_lastcheck = date_timestamp_get(date_create());
             $model->save();
-
+            Flash::success(trans('rssfeeds::general.status.success-feed-added'));
             return;
+        }
+        catch (Exception $ex) {
+            Log::error('Exception adding RSS feed: ' . $ex->getMessage());
+            Log::error($ex->getTraceAsString());
+            Flash::error(trans('rssfeeds::general.status.error-adding-feed'));
+        }
+        return redirect('rssfeeds/manage');
+    }
+
+
+    /**
+     * Update feed in the database.
+     *
+     * @param $query
+     * @return Redirect
+     */
+    public static function updateFeed($query)
+    {
+        try {
+            $feed = FeedsModel::find($query['id']);
+            $feed->feed_name = $query['txtName'];
+            $feed->feed_url = $query['txtUrl'];
+            $feed->feed_active = $query['txtActive'];
+            $feed->feed_items = $query['txtItems'];
+            $feed->feed_interval = $query['txtInterval'];
+            $feed->feed_lastcheck = date_timestamp_get(date_create());
+            $feed->save();
+            Flash::success(trans('rssfeeds::general.status.success-feed-updated'));
         }
         catch (Exception $ex) {
             Log::error('Exception updating RSS feed: ' . $ex->getMessage());
             Log::error($ex->getTraceAsString());
-            Flash::error(trans('rssfeeds::general.status.error-adding-feed'));
-            return redirect('rssfeeds/manage');
+            Flash::error(trans('rssfeeds::general.status.error-updating-feed'));
         }
+        return redirect('rssfeeds/manage');
     }
 
 
