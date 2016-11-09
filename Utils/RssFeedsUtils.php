@@ -280,8 +280,9 @@ class RssFeedsUtils
      */
     public static function getFeeds()
     {
-        Flash::error(trans('rssfeeds::general.status.error-no-feeds'));
         $feeds = FeedsModel::all();
+        if (count($feeds) == 0)
+            Flash::error(trans('rssfeeds::general.status.error-no-feeds'));
         return $feeds;
     }
 
