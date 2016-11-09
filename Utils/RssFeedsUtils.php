@@ -20,6 +20,7 @@ namespace App\Modules\RssFeeds\Utils;
 use App\Modules\RssFeeds\Models\FeedsModel;
 
 use Flash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 
 class RssFeedsUtils
@@ -33,17 +34,24 @@ class RssFeedsUtils
      * @param bool $cache
      * @return array
      */
-    static public function getFeed($url, $cache = true)
+    static public function getFeed($url, $interval, $lastcheck, $cache = true)
     {
         $data = array('items' => array());
 
         // set cache file name from url
         $cf = preg_replace('![^a-z0-9\s]+!', '_', strtolower($url));
 
-        // Try reading from cache file or fall through and fetch from web.
+        // check interval
+        $now = date_timestamp_get(date_create());
+        $diff = round(abs($lastcheck - $now) / 60);
+//dd($interval);
+        // Try reading from cache file if interval exceeded
         if ($cache == true) {
-            if ($data = self::readCache($cf))
-                return $data;
+            if ($diff >= $interval) {
+                if ($data = self::readCache($cf))
+                    return $data;
+            }
+            Log::info("Cache file for ".$url." invalidated. Refreshing feed data.");
         }
 
         // fetch feed and parse
