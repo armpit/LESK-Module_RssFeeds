@@ -85,11 +85,18 @@ class RssFeedsController extends Controller
             // Only grab active feeds.
             if ($feed['feed_active'] == 1) {
                 $data[$x] = RssFeedsUtils::getFeed($feed['feed_url']);
-                // trim items
-                $data[$x]['items'] = array_slice($data[$x]['items'], 0, $feed['feed_items']);
-                // Only increment our counter if the feed had items.
-                if (count($data[$x]['items']) > 0)
-                    $x++;
+
+                // kill the entry if it has no articles
+                if (count($data[$x]['items']) == 0) {
+                    unset($data[$x]);
+                } else {
+                    // trim items
+                    $data[$x]['items'] = array_slice($data[$x]['items'], 0, $feed['feed_items']);
+
+                    // Only increment our counter if the feed had items.
+                    if (count($data[$x]['items']) > 0)
+                        $x++;
+                }
             }
         }
 
