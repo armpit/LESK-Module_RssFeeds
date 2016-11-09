@@ -38,7 +38,6 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
 
     /**
      * Initialize the module.
-     * 
      */
     static public function initialize()
     {
@@ -94,24 +93,26 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
                 'App\Modules\RssFeeds\Http\Controllers\RssFeedsController@process',
                 $permManage );
 
-            $activateProcess = self::createRoute( 'rssfeeds.activate',
+            $routeActivate = self::createRoute( 'rssfeeds.activate',
                 'rssfeeds/activate/{id}',
                 'App\Modules\RssFeeds\Http\Controllers\RssFeedsController@activate',
                 $permManage );
 
-            $deactivateProcess = self::createRoute( 'rssfeeds.deactivate',
+            $routeDeactivate = self::createRoute( 'rssfeeds.deactivate',
                 'rssfeeds/deactivate/{id}',
                 'App\Modules\RssFeeds\Http\Controllers\RssFeedsController@deactivate',
                 $permManage );
 
-            // ----- Create menu item
-            $menuRssFeeds = self::createMenu( 'rssfeeds', 'RSS Feeds', 20, 'fa fa-feed', $menuHome, false,  $routeHome, $permOpenToAll );
+            // ----- Create menu items
+            $menuRssFeeds  = self::createMenu( 'rssfeeds', 'RSS Feeds', 20, 'fa fa-feed', $menuHome, false,  $routeHome, $permOpenToAll );
+            $menuRssView   = self::createMenu( 'rssfeeds.home', 'RSS Feeds', 20, 'fa fa-feed', $menuRssFeeds, false,  $routeHome, $permOpenToAll );
+            $menuRssManage = self::createMenu( 'rssfeeds,manage', 'RSS Feeds', 20, 'fa fa-feed', $menuRssFeeds, false,  $routeManage, $permManage );
         }); // End of DB::transaction(....)
     }
 
+
     /**
      * Uninitialize the module.
-     * 
      */
     static public function unInitialize()
     {
@@ -120,6 +121,8 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
         DB::transaction(function () {
             // ----- Delete menu structure
             self::destroyMenu('rssfeeds');
+            self::destroyMenu('rssfeeds.home');
+            self::destroyMenu('rssfeeds.manage');
 
             // ----- Destroy permissions
             self::destroyPermission('rssfeeds-management');
@@ -134,15 +137,17 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
             self::destroyRoute('rssfeeds.delete');
             self::destroyRoute('rssfeeds.edit');
             self::destroyRoute('rssfeeds.process');
+            self::destroyRoute('rssfeeds.activate');
+            self::destroyRoute('rssfeeds.deactivate');
 
             // ----- Destroy database or rollback migration.
             self::destroyDB();
         }); // End of DB::transaction(....)
     }
 
+
     /**
      * Enable the module.
-     * 
      */
     static public function enable()
     {
@@ -151,12 +156,14 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
         DB::transaction(function () {
             // ----- Enable main menu items
             self::enableMenu('rssfeeds');
+            self::enableMenu('rssfeeds.home');
+            self::enableMenu('rssfeeds.manage');
         }); // End of DB::transaction(....)
     }
 
+
     /**
      * Disable the module.
-     * 
      */
     static public function disable()
     {
@@ -165,12 +172,14 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
         DB::transaction(function () {
             // ----- Disable main menu items
             self::disableMenu('rssfeeds');
+            self::disableMenu('rssfeeds.home');
+            self::disableMenu('rssfeeds.manage');
         }); // End of DB::transaction(....)
     }
 
+
     /**
      * Build database.
-     *
      */
     static public function buildDB()
     {
@@ -189,14 +198,13 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
         });
     }
 
+
     /**
      * Drop database.
-     *
      */
     static public function destroyDB()
     {
         Log::info('Destroying database for Rss Feeds module.');
-
         Schema::dropIfExists('mod_rssfeeds');
     }
 
