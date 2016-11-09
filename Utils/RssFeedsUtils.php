@@ -39,26 +39,22 @@ class RssFeedsUtils
         $data = array('items' => array());
 
         // set cache file name from url
-        $cf = preg_replace('![^a-z0-9\s]+!', '_', strtolower($url));
+        $cachefile = preg_replace('![^a-z0-9\s]+!', '_', strtolower($url));
 
-        // check interval
         $now = date_timestamp_get(date_create());
         $diff = round(abs($lastcheck - $now) / 60);
-//dd($interval);
-        // Try reading from cache file if interval exceeded
+
         if ($cache == true) {
             if ($diff >= $interval) {
-                if ($data = self::readCache($cf))
+                if ($data = self::readCache($cachefile))
                     return $data;
             }
             Log::info("Cache file for ".$url." invalidated. Refreshing feed data.");
         }
 
-        // fetch feed and parse
         $xml = self::doRequest($url);
         $feed = self::makeObjectTree($xml);
 
-        // generate data array
         $data = array(
             'image' => self::safeUrl((string)$feed->channel->image->url),
             'link' => self::safeUrl((string)$feed->channel->link),
@@ -68,7 +64,6 @@ class RssFeedsUtils
             'generator' => (string)$feed->channel->generator,
         );
 
-        // insert items into data array
         $x = 0;
         foreach ($feed->channel->item as $item) {
             $data['items'][$x]['title'] = (string)$item->title;
@@ -78,8 +73,7 @@ class RssFeedsUtils
             $x++;
         }
 
-        // write cache file and return feed data
-        self::writeCache($data, $cf);
+        self::writeCache($data, $cachefile);
         return $data;
     }
 
@@ -141,7 +135,6 @@ class RssFeedsUtils
         $clean = self::cleanText($text);
         // convert newlines
         //$clean = nl2br($clean);
-
         return $clean;
     }
 
