@@ -104,11 +104,11 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
                 $permManage );
 
             // ----- Create menu items
-            $menuRssFeeds  = self::createMenu( 'rssfeeds', 'RSS Feeds', 20, 'fa fa-feed', $menuHome, false,  $routeHome, $permOpenToAll );
-            $menuRssView   = self::createMenu( 'rssfeeds.home', 'RSS Feeds', 20, 'fa fa-feed', $menuRssFeeds, false,  $routeHome, $permOpenToAll );
-            $menuRssManage = self::createMenu( 'rssfeeds.manage', 'RSS Feeds', 20, 'fa fa-feed', $menuRssFeeds, false,  $routeManage, $permManage );
-            $menuRssAdd    = self::createMenu( 'rssfeeds.add', 'RSS Feeds', 20, 'fa fa-feed', $menuRssFeeds, false,  $routeAdd, $permManage );
-            $menuRssEdit   = self::createMenu( 'rssfeeds.edit', 'RSS Feeds', 20, 'fa fa-feed', $menuRssFeeds, false,  $routeEdit, $permManage );
+            $menuRssFeeds  = self::createMenu( 'rssfeeds.root', 'RSS Feeds', 20, 'fa fa-feed', $menuHome, false,  $routeHome, $permOpenToAll );
+            $menuRssView   = self::createMenu( 'rssfeeds.home', 'View Feeds', 1, 'fa fa-bolt', $menuRssFeeds, false,  $routeHome, $permOpenToAll );
+            $menuRssManage = self::createMenu( 'rssfeeds.manage', 'Manage Feeds', 2, 'fa fa-bolt', $menuRssFeeds, false,  $routeManage, $permManage );
+            $menuRssAdd    = self::createMenu( 'rssfeeds.add', 'Add Feeds', 3, 'fa fa-bolt', $menuRssFeeds, false,  $routeAdd, $permManage );
+            $menuRssEdit   = self::createMenu( 'rssfeeds.edit', 'Edit Feeds', 4, 'fa fa-bolt', $menuRssFeeds, false,  $routeEdit, $permManage );
         }); // End of DB::transaction(....)
     }
 
@@ -122,11 +122,11 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
 
         DB::transaction(function () {
             // ----- Delete menu structure
-            self::destroyMenu('rssfeeds');
             self::destroyMenu('rssfeeds.home');
             self::destroyMenu('rssfeeds.manage');
             self::destroyMenu('rssfeeds.add');
             self::destroyMenu('rssfeeds.edit');
+            self::destroyMenu('rssfeeds.root');
 
             // ----- Destroy permissions
             self::destroyPermission('rssfeeds-management');
@@ -159,7 +159,7 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
 
         DB::transaction(function () {
             // ----- Enable main menu items
-            self::enableMenu('rssfeeds');
+            self::enableMenu('rssfeeds.root');
             self::enableMenu('rssfeeds.home');
             self::enableMenu('rssfeeds.manage');
         }); // End of DB::transaction(....)
@@ -175,9 +175,9 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
 
         DB::transaction(function () {
             // ----- Disable main menu items
-            self::disableMenu('rssfeeds');
             self::disableMenu('rssfeeds.home');
             self::disableMenu('rssfeeds.manage');
+            self::disableMenu('rssfeeds.root');
         }); // End of DB::transaction(....)
     }
 
