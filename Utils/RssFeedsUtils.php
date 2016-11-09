@@ -17,8 +17,10 @@
 
 namespace App\Modules\RssFeeds\Utils;
 
+use App\Modules\RssFeeds\Models\FeedsModel;
 
-use League\Flysystem\Exception;
+use Flash;
+use Illuminate\Support\Facades\Redirect;
 
 class RssFeedsUtils
 {
@@ -211,6 +213,75 @@ class RssFeedsUtils
         } catch (Exception $ex) {
             return false;
         }
+    }
+
+
+    /**
+     * Add RSS feed to the database.
+     *
+     * @param $query
+     * @return redirect
+     */
+    public static function addFeed($query)
+    {
+        try {
+            $model = new FeedsModel();
+            $model->feed_name = $query['txtName'];
+            $model->feed_url = $query['txtUrl'];
+            $model->feed_active = $query['txtActive'];
+            $model->feed_items = $query['txtItems'];
+            $model->feed_interval = $query['txtInterval'];
+            $model->feed_lastcheck = date_timestamp_get(date_create());
+            $model->save();
+            Flash::success(trans('rssfeeds::general.status.success-feed-added'));
+            return;
+        }
+        catch (Exception $ex) {
+            Log::error('Exception adding RSS feed: ' . $ex->getMessage());
+            Log::error($ex->getTraceAsString());
+            Flash::error(trans('rssfeeds::general.status.error-adding-feed'));
+        }
+        return redirect('rssfeeds/manage');
+    }
+
+
+    /**
+     * Update feed in the database.
+     *
+     * @param $query
+     * @return Redirect
+     */
+    public static function updateFeed($query)
+    {
+        try {
+            $feed = FeedsModel::find($query['id']);
+            $feed->feed_name = $query['txtName'];
+            $feed->feed_url = $query['txtUrl'];
+            $feed->feed_active = $query['txtActive'];
+            $feed->feed_items = $query['txtItems'];
+            $feed->feed_interval = $query['txtInterval'];
+            $feed->feed_lastcheck = date_timestamp_get(date_create());
+            $feed->save();
+            Flash::success(trans('rssfeeds::general.status.success-feed-updated'));
+        }
+        catch (Exception $ex) {
+            Log::error('Exception updating RSS feed: ' . $ex->getMessage());
+            Log::error($ex->getTraceAsString());
+            Flash::error(trans('rssfeeds::general.status.error-updating-feed'));
+        }
+        return redirect('rssfeeds/manage');
+    }
+
+
+    /**
+     * Get all feeds from database.
+     *
+     * @return mixed
+     */
+    public static function getFeeds()
+    {
+        $feeds = FeedsModel::all();
+        return $feeds;
     }
 
 }
