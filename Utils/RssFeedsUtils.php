@@ -42,8 +42,8 @@ class RssFeedsUtils
 
         // Try reading from cache file or fall through and fetch from web.
         if ($cache == true) {
-            $data = self::readCache($cf);
-           return $data;
+            if ($data = self::readCache($cf))
+                return $data;
         }
 
         // fetch feed and parse
