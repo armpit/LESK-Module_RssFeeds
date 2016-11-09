@@ -106,7 +106,9 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
             // ----- Create menu items
             $menuRssFeeds  = self::createMenu( 'rssfeeds', 'RSS Feeds', 20, 'fa fa-feed', $menuHome, false,  $routeHome, $permOpenToAll );
             $menuRssView   = self::createMenu( 'rssfeeds.home', 'RSS Feeds', 20, 'fa fa-feed', $menuRssFeeds, false,  $routeHome, $permOpenToAll );
-            $menuRssManage = self::createMenu( 'rssfeeds,manage', 'RSS Feeds', 20, 'fa fa-feed', $menuRssFeeds, false,  $routeManage, $permManage );
+            $menuRssManage = self::createMenu( 'rssfeeds.manage', 'RSS Feeds', 20, 'fa fa-feed', $menuRssFeeds, false,  $routeManage, $permManage );
+            $menuRssAdd    = self::createMenu( 'rssfeeds.add', 'RSS Feeds', 20, 'fa fa-feed', $menuRssFeeds, false,  $routeAdd, $permManage );
+            $menuRssEdit   = self::createMenu( 'rssfeeds.edit', 'RSS Feeds', 20, 'fa fa-feed', $menuRssFeeds, false,  $routeEdit, $permManage );
         }); // End of DB::transaction(....)
     }
 
