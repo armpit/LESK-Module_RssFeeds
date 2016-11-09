@@ -51,12 +51,6 @@ class RssFeedsController extends Controller
      * @var \Illuminate\Contracts\Foundation\Application
      */
     protected $app;
-    /**
-     * Accessor for the feed info from DB.
-     *
-     * @var array
-     */
-    private static $feeds;
 
 
     /**
@@ -68,9 +62,6 @@ class RssFeedsController extends Controller
     {
         parent::__construct($app, $audit, "rssfeeds");
         $this->app = $app;
-
-        $feed_list = RssFeedsUtils::getFeeds();
-        self::$feeds = $feed_list->toArray();
     }
 
 
@@ -87,7 +78,7 @@ class RssFeedsController extends Controller
 
         $page_title = trans('rssfeeds::general.page.index.title');
         $page_description = trans('rssfeeds::general.page.index.description');
-        $feeds = self::$feeds;
+        $feeds = RssFeedsUtils::getFeeds()->toArray();
 
         $x = 0;
         foreach ($feeds as $feed) {
@@ -116,7 +107,7 @@ class RssFeedsController extends Controller
     {
         $page_title = trans('rssfeeds::general.page.manage.title');
         $page_description = trans('rssfeeds::general.page.manage.description');
-        $feeds = self::$feeds;
+        $feeds = RssFeedsUtils::getFeeds()->toArray();
         return view('rssfeeds::manage', compact('page_title', 'page_description', 'feeds'));
     }
 
