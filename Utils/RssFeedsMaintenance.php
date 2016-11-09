@@ -125,6 +125,8 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
             self::destroyMenu('rssfeeds');
             self::destroyMenu('rssfeeds.home');
             self::destroyMenu('rssfeeds.manage');
+            self::destroyMenu('rssfeeds.add');
+            self::destroyMenu('rssfeeds.edit');
 
             // ----- Destroy permissions
             self::destroyPermission('rssfeeds-management');
