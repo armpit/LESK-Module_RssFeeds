@@ -35,24 +35,28 @@ class RssFeedsUtils
      * Grab the feed and return the data as an array. The default is to grab the data from
      * the cache file if it exists.
      *
-     * @param string $url
+     * @param array $feed
      * @param bool $cache
      * @return array
      */
-    static public function getFeed($url, $interval, $lastcheck, $cache = true)
+    static public function getFeed($feed, $cache = true)
     {
         $data = false;
+        $url = $feed['feed_url'];
 
         // set cache file name from url
         $cachefile = preg_replace('![^a-z0-9\s]+!', '_', strtolower($url));
 
         $now = date_timestamp_get(date_create());
-        $diff = round(abs($lastcheck - $now) / 60);
+        $diff = round(abs($feed['feed_lastcheck'] - $now) / 60);
 
         if ($cache == true) {
-            if ($diff >= $interval) {
-                if ($data = self::readCache($cachefile))
+            if ($diff < $feed['feed_interval']) {
+                if ($data = self::readCache($cachefile)) {
                     return $data;
+                } else {
+                    Log::info("Error reading cache file for " . $url);
+                }
             }
             Log::info("Cache file for " . $url . " invalidated. Refreshing feed data.");
         }
@@ -62,12 +66,19 @@ class RssFeedsUtils
 //            Log::warning('feed failed validation: '.$url);
 
         $xml = self::doRequest($url);
-        if ($feed = self::makeObjectTree($xml, $url)) {
-            if ($feed->channel->item)
-                $data = self::parseRSS($feed);
-            if ($feed->entry)
-                $data = self::parseAtom($feed);
+        if ($tree = self::makeObjectTree($xml, $url)) {
+            if ($tree->channel->item)
+                $data = self::parseRSS($tree);
+
+            if ($tree->entry)
+                $data = self::parseAtom($tree);
+
             self::writeCache($data, $cachefile);
+
+            $fd = FeedsModel::find($feed['id']);
+            $fd->feed_lastcheck = date_timestamp_get(date_create());
+            $fd->save();
+
         }
         return $data;
     }
@@ -87,7 +98,8 @@ class RssFeedsUtils
         if ($sxe == false) {
             Log::error('Error parsing feed: '.$url);
             foreach (libxml_get_errors() as $error) {
-                Log::error('XML Error: '.$error->message);
+                $message = trim(preg_replace('/\s+/', '', $error->message));
+                Log::error('XML Error: '.$message);
             }
             return false;
         }
