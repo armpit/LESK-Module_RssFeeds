@@ -62,5 +62,7 @@ return [
     'action' => [
         'add'       => 'Add new RSS feed.',
         'update'    => 'Update feed details.',
+        'save'      => 'Save',
+        'cancel'    => 'Cancel',
     ],
 ];

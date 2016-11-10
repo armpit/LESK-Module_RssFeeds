@@ -60,7 +60,13 @@
 
                         <br />
                         <a class="btn btn-default btn-sm fa fa-floppy-o" href="#" onclick="document.forms['frmEdit'].action = '{{ route('rssfeeds.process') }}';  document.forms['frmEdit'].submit(); return false;" title="{{ trans('rssfeeds::general.action.add') }}">
-                            Save
+                            {{ trans('rssfeeds::general.action.save') }}
+                        </a>
+
+                        &nbsp;&nbsp;
+
+                        <a class="btn btn-default btn-sm fa fa-stop-o" href="#" onclick="window.history.back();" title="{{ trans('rssfeeds::general.action.cancel') }}">
+                            {{ trans('rssfeeds::general.action.cancel') }}
                         </a>
 
                         {!! Form::close() !!}
