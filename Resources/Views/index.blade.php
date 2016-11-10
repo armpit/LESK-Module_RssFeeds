@@ -19,7 +19,9 @@
                     <div class="form-group">
 
                         @foreach($data as $feed)
-                            <img src="{{ $feed['image'] }}" alt="{{ $feed['title'] }}" height="100px" />
+                            @if(isset($feed['image']))
+                                <img src="{{ $feed['image'] }}" alt="{{ $feed['title'] }}" height="100px" />
+                            @endif
                             <b>{{ $feed['title'] }}</b> - {{$feed['description'] }}<br />
 
                             @foreach($feed['items'] as $item)
