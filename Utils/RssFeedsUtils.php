@@ -27,9 +27,6 @@ use Illuminate\Support\Facades\Redirect;
  * Class RssFeedsUtils
  * @package App\Modules\RssFeeds\Utils
  *
- * TODO:
- *  - Build validators for RSS and Atom so we can reject malformed elegantly
- *
  */
 class RssFeedsUtils
 {
@@ -60,16 +57,18 @@ class RssFeedsUtils
             Log::info("Cache file for " . $url . " invalidated. Refreshing feed data.");
         }
 
+        // need to create a setting to enable/disable
+//        if(!self::w3cValidator($url))
+//            Log::warning('feed failed validation: '.$url);
+
         $xml = self::doRequest($url);
-        $feed = self::makeObjectTree($xml);
-
-        if ($feed->channel->item)
-            $data = self::parseRSS($feed);
-
-        if ($feed->entry)
-            $data = self::parseAtom($feed);
-
-        self::writeCache($data, $cachefile);
+        if ($feed = self::makeObjectTree($xml, $url)) {
+            if ($feed->channel->item)
+                $data = self::parseRSS($feed);
+            if ($feed->entry)
+                $data = self::parseAtom($feed);
+            self::writeCache($data, $cachefile);
+        }
         return $data;
     }
 
@@ -80,19 +79,31 @@ class RssFeedsUtils
      * @param string $xml
      * @return bool|\SimpleXMLElement
      */
-    static private function makeObjectTree($xml)
+    static private function makeObjectTree($xml, $url)
     {
         libxml_use_internal_errors(true);
+
+        $sxe = simplexml_load_string($xml);
+        if ($sxe == false) {
+            Log::error('Error parsing feed: '.$url);
+            foreach (libxml_get_errors() as $error) {
+                Log::error('XML Error: '.$error->message);
+            }
+            return false;
+        }
+
         try {
             $xmlTree = new \SimpleXMLElement($xml);
         } catch (Exception $e) {
             // Something went wrong.
-            $error_message = 'SimpleXMLElement threw an exception.';
+/*            $error_message = 'SimpleXMLElement threw an exception.';
             foreach(libxml_get_errors() as $error_line) {
                 $error_message .= "\t" . $error_line->message;
             }
-            trigger_error($error_message);
-            dd($xml);
+            trigger_error($error_message);*/
+            Log::error('Exception reading RSS feed: ' . $ex->getMessage());
+            Log::error($ex->getTraceAsString());
+            Flash::error(trans('rssfeeds::general.status.error-reading-feed'));
             return false;
         }
         return $xmlTree;
@@ -191,6 +202,27 @@ class RssFeedsUtils
         return $data;
     }
 
+
+    /**
+     * Validate feeds using the W3C online validator.
+     *
+     * @param $feed
+     * @return bool
+     */
+    private static function w3cValidator($feed)
+    {
+        $validator = "http://validator.w3.org/feed/check.cgi?output=soap12&url={$feed}";
+        $response = file_get_contents($validator);
+
+        $xml = new \DOMDocument();
+        $xml->loadXML($response);
+
+        $validity = $xml->getElementsByTagName('validity');
+        if ($validity->length && $validity->item(0)->nodeValue == 'true') {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Process the feed description removing anything that could be harmful.
