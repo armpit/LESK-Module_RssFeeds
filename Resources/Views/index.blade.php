@@ -19,11 +19,11 @@
                     <div class="form-group">
 
                         @foreach($data as $feed)
-                            @if(isset($feed['image']))
+                            @if(isset($feed['image']) && $feed['image'] != '')
                                 <img src="{{ $feed['image'] }}" alt="{{ $feed['title'] }}" width="144px" />
                             @endif
                             <b>{{ $feed['title'] }}</b>
-                            @if(isset($feed['description']))
+                            @if(isset($feed['description']) && $feed['description'] != '')
                                 - {{$feed['description'] }}
                             @endif
 
