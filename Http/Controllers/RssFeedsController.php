@@ -84,7 +84,7 @@ class RssFeedsController extends Controller
         foreach ($feeds as $feed) {
             // Only grab active feeds.
             if ($feed['feed_active'] == 1) {
-                $data[$x] = RssFeedsUtils::getFeed($feed['feed_url'], $feed['feed_interval'], $feed['feed_lastcheck']);
+                $data[$x] = RssFeedsUtils::getFeed($feed);
 
                 // kill the entry if it has no articles
                 if (count($data[$x]['items']) == 0) {
