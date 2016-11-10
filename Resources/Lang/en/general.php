@@ -36,6 +36,7 @@ return [
     ],
 
     'status' => [
+        'error-invalid-feed'        => 'Feed did not pass validation: ',
         'error-no-feeds'            => 'There are no feeds configured.',
         'error-adding-feed'         => 'Could not add feed.',
         'success-feed-added'        => 'Feed added to database.',
