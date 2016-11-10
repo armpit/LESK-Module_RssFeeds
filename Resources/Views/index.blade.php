@@ -22,7 +22,12 @@
                             @if(isset($feed['image']))
                                 <img src="{{ $feed['image'] }}" alt="{{ $feed['title'] }}" height="100px" />
                             @endif
-                            <b>{{ $feed['title'] }}</b> - {{$feed['description'] }}<br />
+                            <b>{{ $feed['title'] }}</b>
+                            @if(isset($feed['description']))
+                                - {{$feed['description'] }}
+                            @endif
+
+                            <br />
 
                             @foreach($feed['items'] as $item)
                                     <i class="fa fa-feed"></i>&nbsp;&nbsp;<a href="{{ $item['link'] }}">{{ $item['title'] }}</a><br />

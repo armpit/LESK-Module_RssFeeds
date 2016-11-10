@@ -23,6 +23,14 @@ use Flash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 
+/**
+ * Class RssFeedsUtils
+ * @package App\Modules\RssFeeds\Utils
+ *
+ * TODO:
+ *  - Build validators for RSS and Atom so we can reject malformed elegantly
+ *
+ */
 class RssFeedsUtils
 {
 
@@ -36,7 +44,7 @@ class RssFeedsUtils
      */
     static public function getFeed($url, $interval, $lastcheck, $cache = true)
     {
-        $data = array('items' => array());
+        $data = false;
 
         // set cache file name from url
         $cachefile = preg_replace('![^a-z0-9\s]+!', '_', strtolower($url));
@@ -49,29 +57,17 @@ class RssFeedsUtils
                 if ($data = self::readCache($cachefile))
                     return $data;
             }
-            Log::info("Cache file for ".$url." invalidated. Refreshing feed data.");
+            Log::info("Cache file for " . $url . " invalidated. Refreshing feed data.");
         }
 
         $xml = self::doRequest($url);
         $feed = self::makeObjectTree($xml);
 
-        $data = array(
-            'image' => self::safeUrl((string)$feed->channel->image->url),
-            'link' => self::safeUrl((string)$feed->channel->link),
-            'title' => (string)$feed->channel->title,
-            'description' => (string)$feed->channel->description,
-            'language' => (string)$feed->channel->language,
-            'generator' => (string)$feed->channel->generator,
-        );
+        if ($feed->channel->item)
+            $data = self::parseRSS($feed);
 
-        $x = 0;
-        foreach ($feed->channel->item as $item) {
-            $data['items'][$x]['title'] = (string)$item->title;
-            $data['items'][$x]['link'] = (string)$item->link;
-            $data['items'][$x]['pubdate'] = (string)$item->pubDate;
-            $data['items'][$x]['description'] = self::processDescription((string)$item->description);
-            $x++;
-        }
+        if ($feed->entry)
+            $data = self::parseAtom($feed);
 
         self::writeCache($data, $cachefile);
         return $data;
@@ -99,7 +95,6 @@ class RssFeedsUtils
             dd($xml);
             return false;
         }
-
         return $xmlTree;
     }
 
@@ -118,8 +113,82 @@ class RssFeedsUtils
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $xml = curl_exec($ch);
         curl_close($ch);
-
         return $xml;
+    }
+
+
+    /**
+     * Parse atom feed.
+     *
+     * @param SimpleXMLElement $feed
+     * @return array
+     */
+    private static function parseAtom($feed)
+    {
+        $feed = json_encode($feed);
+        $feed = json_decode($feed, true);
+
+        $data = array(
+            'feed_type' => 'atom',
+            'id' => (string) $feed['id'],
+            'title' => (string) $feed['title'],
+            'updated' => (string) $feed['updated'],
+        );
+
+        foreach($feed['link'] as $link) {
+            if($link['@attributes']['type'] == 'text/html') {
+                $data['rel'] = $link['@attributes']['href'];
+            }
+            if($link['@attributes']['type'] == 'application/atom+xml') {
+                $data['self'] = $link['@attributes']['href'];
+            }
+        }
+
+        $x = 0;
+        foreach($feed['entry'] as $entry) {
+            $data['items'][$x]['id'] = $entry['id'];
+            $data['items'][$x]['pubdate'] = $entry['published'];
+            $data['items'][$x]['updated'] = $entry['updated'];
+            $data['items'][$x]['link']
+                = $entry['link']['@attributes']['href'];
+            $data['items'][$x]['title'] = $entry['title'];
+            $data['items'][$x]['author'] = $entry['author']['name'];
+            $data['items'][$x]['author_uri'] = $entry['author']['uri'];
+            $data['items'][$x]['content'] = $entry['content'];
+            $x++;
+        }
+
+        return $data;
+    }
+
+
+    /**
+     * Parse RSS 2.0 feed.
+     *
+     * @param SimpleXMLElement $feed
+     * @return array
+     */
+    private static function parseRSS($feed)
+    {
+        $data = array(
+            'feed_type' => 'rss',
+            'image' => self::safeUrl((string)$feed->channel->image->url),
+            'link' => self::safeUrl((string)$feed->channel->link),
+            'title' => (string)$feed->channel->title,
+            'description' => (string)$feed->channel->description,
+            'language' => (string)$feed->channel->language,
+            'generator' => (string)$feed->channel->generator,
+        );
+
+        $x = 0;
+        foreach ($feed->channel->item as $item) {
+            $data['items'][$x]['title'] = (string)$item->title;
+            $data['items'][$x]['link'] = (string)$item->link;
+            $data['items'][$x]['pubdate'] = (string)$item->pubDate;
+            $data['items'][$x]['content'] = self::processDescription((string)$item->description);
+            $x++;
+        }
+        return $data;
     }
 
 
