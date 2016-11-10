@@ -20,7 +20,7 @@
 
                         @foreach($data as $feed)
                             @if(isset($feed['image']))
-                                <img src="{{ $feed['image'] }}" alt="{{ $feed['title'] }}" height="100px" />
+                                <img src="{{ $feed['image'] }}" alt="{{ $feed['title'] }}" width="144px" />
                             @endif
                             <b>{{ $feed['title'] }}</b>
                             @if(isset($feed['description']))
