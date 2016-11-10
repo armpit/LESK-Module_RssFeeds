@@ -131,9 +131,15 @@ class RssFeedsUtils
     static private function doRequest($url)
     {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt_array(
+            $ch,
+            array(
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_HEADER => false,
+                CURLOPT_URL => filter_var($url, FILTER_VALIDATE_URL),
+                CURLOPT_USERAGENT => 'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1',
+            )
+        );
         $xml = curl_exec($ch);
         curl_close($ch);
         return $xml;
