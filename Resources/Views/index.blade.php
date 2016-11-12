@@ -27,7 +27,14 @@
                             <br />
 
                             @foreach($feed['items'] as $item)
-                                    <i class="fa fa-feed"></i>&nbsp;&nbsp;<a href="{{ $item['url'] }}">{{ $item['title'] }}</a><br />
+                                <div class="feed_container">
+                                    <i class="fa fa-feed"></i>&nbsp;&nbsp;<a href="{{ $item['url'] }}">{{ $item['title'] }}</a>
+                                    &nbsp;&amp;&nbsp;{{ $item['pubdate'] }}
+                                    <p class="feed_expand">View Item</p>
+                                    <div class="feed_content">
+                                        {!! $item['description'] !!}
+                                    </div>
+                                </div>
                             @endforeach
 
                             <hr />
@@ -41,4 +48,32 @@
         </div><!-- /.col -->
 
     </div><!-- /.row -->
+@endsection
+@section('body_bottom')
+<style>
+    .feed_expand {
+        margin: 1px;
+        /*color: #fff;*/
+        padding: 3px 10px;
+        cursor: pointer;
+        position: relative;
+        font-size: 0.6em;
+        /*background-color:#c30;*/
+    }
+    .feed_content {
+        padding: 5px 10px;
+        background-color:#fafafa;
+    }
+    p { padding: 5px 0; }
+</style>
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        jQuery(".feed_content").hide();
+        //toggle the componenet with class msg_body
+        jQuery(".feed_expand").click(function()
+        {
+            jQuery(this).next(".feed_content").slideToggle(500);
+        });
+    });
+</script>
 @endsection
