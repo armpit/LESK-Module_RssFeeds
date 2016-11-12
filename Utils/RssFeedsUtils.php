@@ -56,6 +56,7 @@ class RssFeedsUtils
             $pie->set_feed_url($feed['feed_url']);
             $pie->set_cache_duration($feed['feed_interval']);
             $pie->init();
+            $pie->handle_content_type();
 
             $data[$x]['meta'] = array(
                 'image' => $pie->get_image_url(),
