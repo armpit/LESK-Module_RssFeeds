@@ -16,18 +16,18 @@
                     <div class="form-group">
 
                         @foreach($data as $feed)
-                            @if(isset($feed['image']) && $feed['image'] != '')
-                                <img src="{{ $feed['image'] }}" alt="{{ $feed['title'] }}" width="144px" />
+                            @if(isset($feed['meta']['image']) && $feed['meta']['image'] != '')
+                                <img src="{{ $feed['meta']['image'] }}" alt="{{ $feed['meta']['title'] }}" width="144px" />
                             @endif
-                            <b>{{ $feed['title'] }}</b>
-                            @if(isset($feed['description']) && $feed['description'] != '')
-                                - {{$feed['description'] }}
+                            <b>{{ $feed['meta']['title'] }}</b>
+                            @if(isset($feed['meta']['description']) && $feed['meta']['description'] != '')
+                                - {{$feed['meta']['description'] }}
                             @endif
 
                             <br />
 
                             @foreach($feed['items'] as $item)
-                                    <i class="fa fa-feed"></i>&nbsp;&nbsp;<a href="{{ $item['link'] }}">{{ $item['title'] }}</a><br />
+                                    <i class="fa fa-feed"></i>&nbsp;&nbsp;<a href="{{ $item['url'] }}">{{ $item['title'] }}</a><br />
                             @endforeach
 
                             <hr />

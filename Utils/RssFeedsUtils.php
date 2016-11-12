@@ -26,313 +26,60 @@ use Illuminate\Support\Facades\Redirect;
 /**
  * Class RssFeedsUtils
  * @package App\Modules\RssFeeds\Utils
- *
  */
 class RssFeedsUtils
 {
 
     /**
-     * Grab the feed and return the data as an array. The default is to grab the data from
-     * the cache file if it exists.
-     *
-     * @param array $feed
-     * @param bool $cache
-     * @return array
+     * Initialize SimplePie object.
+     * @return \SimplePie
      */
-    static public function getFeed($feed, $cache = true)
+    public static function initPie()
     {
-        $data = false;
-        $url = $feed['feed_url'];
-
-        // set cache file name from url
-        $cachefile = preg_replace('![^a-z0-9\s]+!', '_', strtolower($url));
-
-        $now = date_timestamp_get(date_create());
-        $diff = round(abs($feed['feed_lastcheck'] - $now) / 60);
-
-        if ($cache == true) {
-            if ($diff < $feed['feed_interval']) {
-                if ($data = self::readCache($cachefile)) {
-                    return $data;
-                } else {
-                    Log::info("Error reading cache file for " . $url);
-                }
-            }
-            Log::info("Cache file for " . $url . " invalidated. Refreshing feed data.");
-        }
-
-        // need to create a setting to enable/disable
-//        if(!self::w3cValidator($url))
-//            Log::warning('feed failed validation: '.$url);
-
-        $xml = self::doRequest($url);
-        if ($tree = self::makeObjectTree($xml, $url)) {
-            if ($tree->channel->item)
-                $data = self::parseRSS($tree);
-
-            if ($tree->entry)
-                $data = self::parseAtom($tree);
-
-            self::writeCache($data, $cachefile);
-
-            $fd = FeedsModel::find($feed['id']);
-            $fd->feed_lastcheck = date_timestamp_get(date_create());
-            $fd->save();
-
-        }
-        return $data;
+        $pie = new \SimplePie();
+        $pie->enable_cache(true);
+        $pie->set_cache_duration(3600);
+        $pie->set_cache_location(storage_path());
+        return $pie;
     }
 
 
     /**
-     * Create XML object tree.
-     *
-     * @param string $xml
-     * @return bool|\SimpleXMLElement
-     */
-    static private function makeObjectTree($xml, $url)
-    {
-        libxml_use_internal_errors(true);
-
-        $sxe = simplexml_load_string($xml);
-        if ($sxe == false) {
-            Log::error('Error parsing feed: '.$url);
-            foreach (libxml_get_errors() as $error) {
-                $message = trim(preg_replace('/\s+/', '', $error->message));
-                Log::error('XML Error: '.$message);
-            }
-            return false;
-        }
-
-        try {
-            $xmlTree = new \SimpleXMLElement($xml);
-        } catch (Exception $e) {
-            // Something went wrong.
-/*            $error_message = 'SimpleXMLElement threw an exception.';
-            foreach(libxml_get_errors() as $error_line) {
-                $error_message .= "\t" . $error_line->message;
-            }
-            trigger_error($error_message);*/
-            Log::error('Exception reading RSS feed: ' . $ex->getMessage());
-            Log::error($ex->getTraceAsString());
-            Flash::error(trans('rssfeeds::general.status.error-reading-feed'));
-            return false;
-        }
-        return $xmlTree;
-    }
-
-
-    /**
-     * Grab the url via curl.
-     *
-     * @param string $url
+     * @param \SimplePie $pie
+     * @param array $feeds
      * @return mixed
      */
-    static private function doRequest($url)
+    public static function getFeedData(\SimplePie $pie, $feeds)
     {
-        $ch = curl_init();
-        curl_setopt_array(
-            $ch,
-            array(
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_HEADER => false,
-                CURLOPT_URL => filter_var($url, FILTER_VALIDATE_URL),
-                CURLOPT_USERAGENT => 'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1',
-            )
-        );
-        $xml = curl_exec($ch);
-        curl_close($ch);
-        return $xml;
-    }
-
-
-    /**
-     * Parse atom feed.
-     *
-     * @param SimpleXMLElement $feed
-     * @return array
-     */
-    private static function parseAtom($feed)
-    {
-        $feed = json_encode($feed);
-        $feed = json_decode($feed, true);
-
-        $data = array(
-            'feed_type' => 'atom',
-            'id' => (string) $feed['id'],
-            'title' => (string) $feed['title'],
-            'updated' => (string) $feed['updated'],
-        );
-
-        foreach($feed['link'] as $link) {
-            if($link['@attributes']['type'] == 'text/html') {
-                $data['rel'] = $link['@attributes']['href'];
-            }
-            if($link['@attributes']['type'] == 'application/atom+xml') {
-                $data['self'] = $link['@attributes']['href'];
-            }
-        }
-
         $x = 0;
-        foreach($feed['entry'] as $entry) {
-            $data['items'][$x]['id'] = $entry['id'];
-            $data['items'][$x]['pubdate'] = $entry['published'];
-            $data['items'][$x]['updated'] = $entry['updated'];
-            $data['items'][$x]['link']
-                = $entry['link']['@attributes']['href'];
-            $data['items'][$x]['title'] = $entry['title'];
-            $data['items'][$x]['author'] = $entry['author']['name'];
-            $data['items'][$x]['author_uri'] = $entry['author']['uri'];
-            $data['items'][$x]['content'] = $entry['content'];
-            $x++;
-        }
+        foreach ($feeds as $feed) {
+            $pie->set_feed_url($feed['feed_url']);
+            $pie->set_cache_duration($feed['feed_interval']);
+            $pie->init();
 
-        return $data;
-    }
+            $data[$x]['meta'] = array(
+                'image' => $pie->get_image_url(),
+                'url' => $pie->get_permalink(),
+                'title' => $pie->get_title(),
+                'description' => $pie->get_description(),
+            );
 
-
-    /**
-     * Parse RSS 2.0 feed.
-     *
-     * @param SimpleXMLElement $feed
-     * @return array
-     */
-    private static function parseRSS($feed)
-    {
-        $data = array(
-            'feed_type' => 'rss',
-            'image' => self::safeUrl((string)$feed->channel->image->url),
-            'link' => self::safeUrl((string)$feed->channel->link),
-            'title' => (string)$feed->channel->title,
-            'description' => (string)$feed->channel->description,
-            'language' => (string)$feed->channel->language,
-            'generator' => (string)$feed->channel->generator,
-        );
-
-        $x = 0;
-        foreach ($feed->channel->item as $item) {
-            $data['items'][$x]['title'] = (string)$item->title;
-            $data['items'][$x]['link'] = (string)$item->link;
-            $data['items'][$x]['pubdate'] = (string)$item->pubDate;
-            $data['items'][$x]['content'] = self::processDescription((string)$item->description);
+            $y = 0;
+            for ($c = 0; $c < $feed['feed_items']; $c++) {
+                $item = $pie->get_item($c);
+                if($item) {
+                    $data[$x]['items'][$y] = array(
+                        'url' => $item->get_permalink(),
+                        'title' => $item->get_title(),
+                        'description' => $item->get_description(),
+                        'pubdate' => $item->get_date('j F Y | g:i a'),
+                    );
+                }
+                $y++;
+            }
             $x++;
         }
         return $data;
-    }
-
-
-    /**
-     * Validate feeds using the W3C online validator.
-     *
-     * @param $feed
-     * @return bool
-     */
-    private static function w3cValidator($feed)
-    {
-        $validator = "http://validator.w3.org/feed/check.cgi?output=soap12&url={$feed}";
-        $response = file_get_contents($validator);
-
-        $xml = new \DOMDocument();
-        $xml->loadXML($response);
-
-        $validity = $xml->getElementsByTagName('validity');
-        if ($validity->length && $validity->item(0)->nodeValue == 'true') {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Process the feed description removing anything that could be harmful.
-     *
-     * @param string $text
-     * @return string
-     */
-    static private function processDescription($text)
-    {
-        // sanitize
-        $clean = self::cleanText($text);
-        // convert newlines
-        //$clean = nl2br($clean);
-        return $clean;
-    }
-
-
-    /**
-     * Remove encoded tags and then re-encode the whole lot.
-     *
-     * @param string $text
-     * @param int $length
-     * @return string
-     */
-    static private function cleanText($text, $length = 0)
-    {
-        $html = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
-        $text = strip_tags($html);
-        if ($length > 0 && strlen($text) > $length) {
-            $cut_point = strrpos(substr($text, 0, $length), ' ');
-            $text = substr($text, 0, $cut_point) . '…';
-        }
-        $text = htmlentities($text, ENT_QUOTES, 'UTF-8');
-        return $text;
-    }
-
-
-    /**
-     * Make sure that urls contain nothing harmful.
-     *
-     * @param string $raw_url
-     * @return bool|string
-     */
-    static private function safeUrl($raw_url)
-    {
-        $url_scheme = parse_url($raw_url, PHP_URL_SCHEME);
-        if ($url_scheme == 'http' || $url_scheme == 'https') {
-            return htmlspecialchars($raw_url, ENT_QUOTES, 'UTF-8', false);
-        }
-        // parse_url failed, or the scheme was not hypertext-based.
-        return false;
-    }
-
-
-    /**
-     * Read feed data from cache file.
-     *
-     * @param $file
-     * @return bool
-     */
-    static private function readCache($file)
-    {
-        $path = realpath(dirname(__FILE__));
-        if (file_exists($path . '/../../../../storage/' . $file)) {
-             $data = file_get_contents($path . '/../../../../storage/' . $file);
-            $data = json_decode($data, true);
-            return $data;
-         }
-        return false;
-    }
-
-
-    /**
-     * Output feed data as json to cache file.
-     *
-     * @param array $data
-     * @param string $cacheFile
-     * @return bool
-     */
-    static private function writeCache($data, $cacheFile)
-    {
-        $json = json_encode($data, JSON_UNESCAPED_UNICODE);
-
-        try {
-            $path = realpath(dirname(__FILE__));
-            $fh = fopen($path . '/../../../../storage/' . $cacheFile, 'w');
-            fwrite($fh, $json);
-            fclose($fh);
-            return true;
-        } catch (Exception $ex) {
-            return false;
-        }
     }
 
 

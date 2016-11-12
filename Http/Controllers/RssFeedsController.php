@@ -51,17 +51,21 @@ class RssFeedsController extends Controller
      * @var \Illuminate\Contracts\Foundation\Application
      */
     protected $app;
-
+    public $pie;
 
     /**
      * Custom constructor to get a handle on the Application instance.
      *
      * @param Application $app
+     * @param Audit $audit
      */
     public function __construct(Application $app, Audit $audit)
     {
         parent::__construct($app, $audit, "rssfeeds");
         $this->app = $app;
+
+        if (! $this->pie)
+            $this->pie = RssFeedsUtils::initPie();
     }
 
 
@@ -73,32 +77,11 @@ class RssFeedsController extends Controller
      */
     public function index(Request $request)
     {
-        // Initialize $data in case there are no feeds.
-        $data = array();
-
         $page_title = trans('rssfeeds::general.page.index.title');
         $page_description = trans('rssfeeds::general.page.index.description');
         $feeds = RssFeedsUtils::getFeeds()->toArray();
 
-        $x = 0;
-        foreach ($feeds as $feed) {
-            // Only grab active feeds.
-            if ($feed['feed_active'] == 1) {
-                $data[$x] = RssFeedsUtils::getFeed($feed);
-
-                // kill the entry if it has no articles
-                if (count($data[$x]['items']) == 0) {
-                    unset($data[$x]);
-                } else {
-                    // trim items
-                    $data[$x]['items'] = array_slice($data[$x]['items'], 0, $feed['feed_items']);
-
-                    // Only increment our counter if the feed had items.
-                    if (count($data[$x]['items']) > 0)
-                        $x++;
-                }
-            }
-        }
+        $data = RssFeedsUtils::getFeedData($this->pie, $feeds);
 
         return view('rssfeeds::index', compact('page_title', 'page_description', 'data'));
     }
