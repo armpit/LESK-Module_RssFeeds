@@ -29,7 +29,7 @@
                             @foreach($feed['items'] as $item)
                                 <div class="feed_container">
                                     <i class="fa fa-feed"></i>&nbsp;&nbsp;<a href="{{ $item['url'] }}">{{ $item['title'] }}</a>
-                                    &nbsp;&amp;&nbsp;{{ $item['pubdate'] }}
+                                    &nbsp;&#64;&nbsp;{{ $item['pubdate'] }}
                                     <p class="feed_expand">View Item</p>
                                     <div class="feed_content">
                                         {!! $item['description'] !!}
