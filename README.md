@@ -15,10 +15,17 @@ $ ./artisan module:optimize
 ```
 
 # Dependencies
-....
 
-#Prerequisites
-....
+- [SimplePie](https://github.com/simplepie/simplepie "SimplePie") - used for parsing RSS feeds.
+
+You can install SimplePie using composer from the base directory of your [LESK](https://github.com/sroutier/laravel-enterprise-starter-kit) installation thusly:
+
+```
+$ composer require simplepie/simplepie
+```
+
+# Prerequisites
+
 
 # Installing and activating
 Once a new module is detected by the framework, a site administrator can go to the "Modules administration" page and first 
