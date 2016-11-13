@@ -26,6 +26,7 @@
 
                             <br />
 
+                            @if(isset($feed['items']))
                             @foreach($feed['items'] as $item)
                                 <div class="feed_container">
                                     <i class="fa fa-feed"></i>&nbsp;&nbsp;<a href="{{ $item['url'] }}">{{ $item['title'] }}</a>
@@ -36,6 +37,7 @@
                                     </div>
                                 </div>
                             @endforeach
+                            @endif
 
                             <hr />
                         @endforeach
