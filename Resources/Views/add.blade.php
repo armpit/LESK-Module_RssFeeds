@@ -33,7 +33,7 @@
                         <b>Update Interval (minutes):</b><br />
                         {!! Form::text(
                             'txtInterval',
-                            '180',
+                            '3600',
                             ['style' => 'width:250px;', 'id' => 'txtInterval'])
                         !!}
                         <br />
