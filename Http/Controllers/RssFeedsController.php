@@ -165,7 +165,7 @@ class RssFeedsController extends Controller
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-deleting-feed'));
         }
-        return redirect(route('rssfeeds.manage'));
+        return redirect()->route('rssfeeds.manage');
     }
 
 
@@ -200,7 +200,7 @@ class RssFeedsController extends Controller
                 RssFeedsUtils::updateFeed($query);
             }
         }
-        return redirect(route('rssfeeds.manage'));
+        return redirect()->route('rssfeeds.manage');
     }
 
 
@@ -223,7 +223,7 @@ class RssFeedsController extends Controller
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-activating-feed'));
         }
-        return redirect(route('rssfeeds.manage'));
+        return redirect()->route('rssfeeds.manage');
     }
 
 
@@ -246,7 +246,7 @@ class RssFeedsController extends Controller
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-deactivating-feed'));
         }
-        return redirect(route('rssfeeds.manage'));
+        return redirect()->route('rssfeeds.manage');
     }
 
 }
