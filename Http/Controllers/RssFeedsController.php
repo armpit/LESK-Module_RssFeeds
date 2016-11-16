@@ -101,7 +101,7 @@ class RssFeedsController extends Controller
         $page_title = trans('rssfeeds::general.page.mine.title');
         $page_description = trans('rssfeeds::general.page.mine.description');
 
-        $feeds = RssFeedsUtils::getFeeds($user->id);
+        $feeds = RssFeedsUtils::getFeeds(Auth::user()->id);
         if (!$feeds->isEmpty())
             $data = RssFeedsUtils::getFeedData($this->pie, $feeds->toArray());
 
