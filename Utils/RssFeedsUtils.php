@@ -99,7 +99,6 @@ class RssFeedsUtils
             $model->feed_active = $query['txtActive'];
             $model->feed_items = $query['txtItems'];
             $model->feed_interval = $query['txtInterval'];
-            $model->feed_lastcheck = date_timestamp_get(date_create());
             $model->feed_owner = ($query['txtPersonal'] == 1) ? \Auth::user()->id : '0';
             $model->save();
             Flash::success(trans('rssfeeds::general.status.success-feed-added'));
@@ -129,7 +128,6 @@ class RssFeedsUtils
             $feed->feed_active = $query['txtActive'];
             $feed->feed_items = $query['txtItems'];
             $feed->feed_interval = $query['txtInterval'];
-            $feed->feed_lastcheck = date_timestamp_get(date_create());
             $feed->save();
             Flash::success(trans('rssfeeds::general.status.success-feed-updated'));
         }

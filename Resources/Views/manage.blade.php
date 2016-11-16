@@ -19,7 +19,6 @@
                             <th width="300">URL</th>
                             <th width="80">Items</th>
                             <th width="80">Interval</th>
-                            <th width="100">Updated</th>
                             <th width="100">Owner</th>
                             <th width="80">Active</th>
                             <th  width="200"></th>
@@ -31,7 +30,6 @@
                             <td>{{ $feed['feed_url'] }}</td>
                             <td>{{ $feed['feed_items'] }}</td>
                             <td>{{ $feed['feed_interval'] }}</td>
-                            <td>{{ date('m/d/Y H:i:s', $feed['feed_lastcheck']) }}</td>
                             <td>{{ $feed['feed_owner'] }}</td>
                             <td>
                                 @if($feed['feed_active'] == 1)

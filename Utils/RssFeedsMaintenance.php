@@ -210,7 +210,6 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
             $table->boolean('feed_active')->comment('Is the feed active.')->default('true');
             $table->integer('feed_items')->comment('Number of items to retrieve.')->default(5);
             $table->integer('feed_interval')->comment('Update interval.')->default(3600);
-            $table->timestamp('feed_lastcheck')->comment('Timestamp of last time feed was checked.');
             $table->integer('feed_owner')->comment('The user that owns the feed.')->default(0);
             //$table->timestamps();
         });
