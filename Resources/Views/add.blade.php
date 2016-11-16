@@ -55,6 +55,19 @@
                         !!}
                         <br />
 
+                        @if(Auth::user()->hasRole('rssfeeds-manager') || Auth::user()->hasRole('admins'))
+                            <b>Personal Feed:</b><br />
+                            {!! Form::select(
+                                'txtPersonal',
+                                ['False', 'True'],
+                                '',
+                                ['style' => 'width:250px;', 'id' => 'txtPersonal'])
+                            !!}
+                            <br />
+                        @else
+                            {!! Form::hidden('txtPersonal', 'true', ['id' => 'txtPersonal']) !!}
+                        @endif
+
                         <br />
                         <a class="btn btn-default btn-sm fa fa-floppy-o" href="#" onclick="document.forms['frmEdit'].action = '{{ route('rssfeeds.process') }}';  document.forms['frmEdit'].submit(); return false;" title="{{ trans('rssfeeds::general.action.add') }}">
                             {{ trans('rssfeeds::general.action.save') }}

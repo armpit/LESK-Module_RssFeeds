@@ -100,6 +100,7 @@ class RssFeedsUtils
             $model->feed_items = $query['txtItems'];
             $model->feed_interval = $query['txtInterval'];
             $model->feed_lastcheck = date_timestamp_get(date_create());
+            $model->feed_owner = ($query['txtPersonal'] == 1) ? \Auth::user()->id : '0';
             $model->save();
             Flash::success(trans('rssfeeds::general.status.success-feed-added'));
             return;
@@ -142,15 +143,23 @@ class RssFeedsUtils
 
 
     /**
-     * Get all feeds from database.
+     * Get feeds from database.
      *
+     * @param integer $user
      * @return mixed
      */
-    public static function getFeeds()
+    public static function getFeeds($user = null)
     {
-        $feeds = FeedsModel::all();
-        if (count($feeds) == 0)
-            Flash::error(trans('rssfeeds::general.status.error-no-feeds'));
+        if (isset($user)) {
+            $feeds = FeedsModel::where('feed_owner', $user)->get();
+            if (count($feeds) == 0)
+                Flash::error(trans('rssfeeds::general.status.error-no-user-feeds'));
+        } else {
+            //$feeds = FeedsModel::where('feed_owner', 0)->get();
+            $feeds = FeedsModel::all();
+            if (count($feeds) == 0)
+                Flash::error(trans('rssfeeds::general.status.error-no-feeds'));
+        }
         return $feeds;
     }
 

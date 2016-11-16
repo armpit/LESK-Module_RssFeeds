@@ -3,8 +3,9 @@
 @section('content')
 
     @if(Auth::user() && (Auth::user()->hasRole('rssfeeds-manager') || Auth::user()->hasRole('admins')))
-        <a href="rssfeeds/manage" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.manage') }}</a>
+        <a href="{{ route('rssfeeds.manage') }}" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.manage') }}</a>
     @endif
+    <a href="{{ route('rssfeeds.mine') }}" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.mine') }}</a>
 
     <div class='row'>
         <div class='col-md-12'>

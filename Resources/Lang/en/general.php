@@ -13,6 +13,11 @@ return [
             'description'       => 'Simple RSS Feed Reader.',
             'box-title'         => 'RSS Feeds',
         ],
+        'mine'         => [
+            'title'             => 'My Feeds',
+            'description'       => 'Users personal RSS feeds.',
+            'box-title'         => 'My Feeds',
+        ],
         'add'         => [
             'title'             => 'RSS Feeds Management',
             'description'       => 'Add a new RSS feed.',
@@ -48,6 +53,8 @@ return [
         'success-feed-activated'    => 'Feed activated.',
         'success-deactivating-feed' => 'Could not deactivate feed.',
         'success-feed-deactivated'  => 'Feed deactivated.',
+        'error-no-such-user'        => 'User not found.',
+        'error-no-user-feeds'       => 'User has no personal feeds.',
     ],
 
     'button' => [
@@ -58,6 +65,8 @@ return [
         'save'      => 'Save',
         'manage'    => 'Manage Feeds',
         'add'       => 'Add Feed',
+        'mine'      => 'My Feeds',
+        'index'     => 'Feeds Home'
     ],
 
     'action' => [

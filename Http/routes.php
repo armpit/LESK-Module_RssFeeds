@@ -51,6 +51,7 @@ Route::group(['middleware' => 'authorize'], function () {
 
     // rssfeeds routes
     Route::group(['prefix' => 'rssfeeds'], function () {
+        Route::get( 'mine',             ['as' => 'rssfeeds.mine',        'uses' => 'RssFeedsController@mine']);
         Route::get( '/manage',          ['as' => 'rssfeeds.manage',      'uses' => 'RssFeedsController@manage']);
         Route::get( '/add',             ['as' => 'rssfeeds.add',         'uses' => 'RssFeedsController@add']);
         Route::get( '/activate/{id}',   ['as' => 'rssfeeds.activate',    'uses' => 'RssFeedsController@activate']);

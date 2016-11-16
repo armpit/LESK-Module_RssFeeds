@@ -20,14 +20,12 @@
 
 namespace App\Modules\RssFeeds\Http\Controllers;
 
-use App\Facades\MenuBuilderFacade;
-use App\Managers\MenuBuilderManager;
 use App\Modules\RssFeeds\Models\FeedsModel;
 use App\Modules\RssFeeds\Utils\RssFeedsUtils;
+use App\Modules\RssFeeds\Http\Requests\AddFeed;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Providers\MenuBuilderServiceProvider;
 use Flash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -77,13 +75,38 @@ class RssFeedsController extends Controller
      */
     public function index(Request $request)
     {
+        $data = array();
         $page_title = trans('rssfeeds::general.page.index.title');
         $page_description = trans('rssfeeds::general.page.index.description');
-        $feeds = RssFeedsUtils::getFeeds()->toArray();
 
-        $data = RssFeedsUtils::getFeedData($this->pie, $feeds);
+        $feeds = RssFeedsUtils::getFeeds();
+        if(!$feeds->isEmpty())
+            $data = RssFeedsUtils::getFeedData($this->pie, $feeds->toArray());
 
         return view('rssfeeds::index', compact('page_title', 'page_description', 'data'));
+    }
+
+
+    /**
+     * Show users personal feeds.
+     * @return \Illuminate\Contracts\View\Factory|Redirect|\Illuminate\View\View
+     */
+    public static function mine()
+    {
+        $data = array();
+        if(! $user = Auth::getUser()) {
+            Flash::success(trans('rssfeeds::general.status.error-no-such-user'));
+            return redirect('rssfeeds');
+        }
+
+        $page_title = trans('rssfeeds::general.page.mine.title');
+        $page_description = trans('rssfeeds::general.page.mine.description');
+
+        $feeds = RssFeedsUtils::getFeeds($user->id);
+        if (!$feeds->isEmpty())
+            $data = RssFeedsUtils::getFeedData($this->pie, $feeds->toArray());
+
+        return view('rssfeeds::mine', compact('page_title', 'page_description', 'data'));
     }
 
 
@@ -98,6 +121,15 @@ class RssFeedsController extends Controller
         $page_title = trans('rssfeeds::general.page.manage.title');
         $page_description = trans('rssfeeds::general.page.manage.description');
         $feeds = RssFeedsUtils::getFeeds()->toArray();
+
+        for ($i = 0; $i < count($feeds); $i++) {
+            if ($feeds[$i]['feed_owner'] == 0) {
+                $feeds[$i]['feed_owner'] = 'Public';
+            } else {
+                $feeds[$i]['feed_owner'] = Auth::getUser($feeds[$i]['feed_owner'])->username;
+            }
+        }
+
         return view('rssfeeds::manage', compact('page_title', 'page_description', 'feeds'));
     }
 
@@ -158,7 +190,7 @@ class RssFeedsController extends Controller
      * @param Request $request
      * @return redirect
      */
-    public static function process(Request $request)
+    public static function process(AddFeed $request)
     {
         $query = $request->input();
         if (isset($query['action'])) {

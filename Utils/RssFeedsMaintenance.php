@@ -47,6 +47,7 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
             //----- Build database or run migration.
             self::buildDB();
 
+            $permAuthed = Permission::where('name', 'basic-authenticated')->first();
             $permOpenToAll = Permission::where('name', 'open-to-all')->first();
             $menuHome = Menu::where('name', 'home')->first();
 
@@ -67,6 +68,11 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
                 'rssfeeds',
                 'App\Modules\RssFeeds\Http\Controllers\RssFeedsController@home',
                 $permOpenToAll );
+
+            $routeMine = self::createRoute( 'rssfeeds.mine',
+                'rssfeeds/mine',
+                'App\Modules\RssFeeds\Http\Controllers\RssFeedsController@mine',
+                $permAuthed );
 
             $routeManage = self::createRoute( 'rssfeeds.manage',
                 'rssfeeds/manage',
@@ -195,9 +201,10 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
             $table->string('feed_name')->comment('The name of the feed.')->unique();
             $table->string('feed_url')->comment('The URL of the feed.')->unique();
             $table->boolean('feed_active')->comment('Is the feed active.')->default('true');
-            $table->integer('feed_items')->comment('Number of items to retrieve.');
-            $table->integer('feed_interval')->comment('Update interval.');
+            $table->integer('feed_items')->comment('Number of items to retrieve.')->default(5);
+            $table->integer('feed_interval')->comment('Update interval.')->default(3600);
             $table->timestamp('feed_lastcheck')->comment('Timestamp of last time feed was checked.');
+            $table->integer('feed_owner')->comment('The user that owns the feed.')->default(0);
             //$table->timestamps();
         });
     }
