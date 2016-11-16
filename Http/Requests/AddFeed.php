@@ -27,8 +27,8 @@ class AddFeed extends Request
     public function rules()
     {
         return [
-            'txtName' => 'bail|required|max:255',
-            'txtUrl'  => 'bail|required|url',
+            'txtName' => 'required|max:255',
+            'txtUrl'  => 'required|url',
         ];
     }
 }
