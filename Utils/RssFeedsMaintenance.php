@@ -27,6 +27,7 @@ use App\User;
 use DB;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Schema;
 
 use Sroutier\LESKModules\Contracts\ModuleMaintenanceInterface;
@@ -115,6 +116,9 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
             $menuRssManage = self::createMenu( 'rssfeeds.manage', 'Manage Feeds', 2, 'fa fa-bolt', $menuRssFeeds, false,  $routeManage, $permManage );
             $menuRssAdd    = self::createMenu( 'rssfeeds.add', 'Add Feeds', 3, 'fa fa-bolt', $menuRssFeeds, false,  $routeAdd, $permManage );
             $menuRssEdit   = self::createMenu( 'rssfeeds.edit', 'Edit Feeds', 4, 'fa fa-bolt', $menuRssFeeds, false,  $routeEdit, $permManage );
+
+            // ----- Create cache directory
+            Storage::makeDirectory('rssfeeds_cache');
         }); // End of DB::transaction(....)
     }
 
@@ -152,6 +156,9 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
 
             // ----- Destroy database or rollback migration.
             self::destroyDB();
+
+            // ----- Delete cache directory
+            Storage::deleteDirectory('rssfeeds_cache');
         }); // End of DB::transaction(....)
     }
 

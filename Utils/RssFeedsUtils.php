@@ -39,7 +39,7 @@ class RssFeedsUtils
         $pie = new \SimplePie();
         $pie->enable_cache(true);
         $pie->set_cache_duration(3600);
-        $pie->set_cache_location(storage_path().'/app');
+        $pie->set_cache_location(storage_path().'/app/rssfeeds_cache');
         return $pie;
     }
 
