@@ -24,31 +24,35 @@ use App\Modules\RssFeeds\Models\FeedsModel;
 use App\Modules\RssFeeds\Utils\RssFeedsUtils;
 use App\Modules\RssFeeds\Http\Requests\AddFeed;
 
-use App\Http\Requests;
+use App\Repositories\AuditRepository as Audit;
+
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
+use App\User;
+use Auth;
 use Flash;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Redirector;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Log;
-use App\Repositories\AuditRepository as Audit;
-use Auth;
-use App\Models\Setting;
-use App\User;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Redirect;
 
 
 class RssFeedsController extends Controller
 {
+
     /**
      * The application instance.
-     *
      * @var \Illuminate\Contracts\Foundation\Application
      */
     protected $app;
+    /**
+     * Accessor for simple pie instance.
+     * @var \SimplePie
+     */
     public $pie;
 
     /**
@@ -61,7 +65,6 @@ class RssFeedsController extends Controller
     {
         parent::__construct($app, $audit, "rssfeeds");
         $this->app = $app;
-
         if (! $this->pie)
             $this->pie = RssFeedsUtils::initPie();
     }
@@ -89,16 +92,12 @@ class RssFeedsController extends Controller
 
     /**
      * Show users personal feeds.
+     *
      * @return \Illuminate\Contracts\View\Factory|Redirect|\Illuminate\View\View
      */
     public static function mine()
     {
         $data = array();
-        if(! $user = Auth::getUser()) {
-            Flash::success(trans('rssfeeds::general.status.error-no-such-user'));
-            return redirect('rssfeeds');
-        }
-
         $page_title = trans('rssfeeds::general.page.mine.title');
         $page_description = trans('rssfeeds::general.page.mine.description');
 
@@ -166,7 +165,7 @@ class RssFeedsController extends Controller
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-deleting-feed'));
         }
-        return redirect('rssfeeds/manage');
+        return redirect(route('rssfeeds.manage'));
     }
 
 
@@ -201,7 +200,7 @@ class RssFeedsController extends Controller
                 RssFeedsUtils::updateFeed($query);
             }
         }
-        return redirect('rssfeeds/manage');
+        return redirect(route('rssfeeds.manage'));
     }
 
 
@@ -224,7 +223,7 @@ class RssFeedsController extends Controller
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-activating-feed'));
         }
-        return redirect('rssfeeds/manage');
+        return redirect(route('rssfeeds.manage'));
     }
 
 
@@ -247,7 +246,7 @@ class RssFeedsController extends Controller
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-deactivating-feed'));
         }
-        return redirect('rssfeeds/manage');
+        return redirect(route('rssfeeds.manage'));
     }
 
 }
