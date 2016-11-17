@@ -39,9 +39,9 @@
                                 @endif
                             </td>
                             <td>
-                                <a href="edit/{{ $feed['id'] }}" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.edit') }}</a>
+                                <a href="edit/{{ $feed['id'] }}" class="fa fa-pencil"> {{ trans('rssfeeds::general.button.edit') }}</a>
                                 |
-                                <a href="delete/{{ $feed['id'] }}" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.delete') }}</a>
+                                <a href="delete/{{ $feed['id'] }}" class="fa fa-trash"> {{ trans('rssfeeds::general.button.delete') }}</a>
                             </td>
                         </tr>
                         @endforeach
