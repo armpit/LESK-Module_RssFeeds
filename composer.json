@@ -1,0 +1,42 @@
+{
+    "name": "armpit/LESK-Module_RssFeeds",
+    "description": "Simple RSS feed reader for LESK sites.",
+    "keywords": [
+      "LESK",
+      "laravel"
+    ],
+    "homepage": "https://github.com/armpit/LESK-Module_RssFeeds",
+    "license": "ISC",
+    "authors": [
+      {
+        "name": "armpit",
+        "email": "armpit@rumpigs.net"
+      }
+    ],
+    "type": "project",
+    "repositories": [
+      {
+        "type": "vcs",
+        "url": "https://github.com/armpit/LESK-Module_RssFeeds"
+      }
+    ],
+    "require": {
+        "simplepie/simplepie": "^1.4"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "php artisan clear-compiled",
+            "php artisan optimize"
+        ],
+        "post-update-cmd": [
+            "php artisan clear-compiled",
+            "php artisan ide-helper:generate",
+            "php artisan optimize"
+        ]
+    },
+    "config": {
+        "preferred-install": "dist"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
