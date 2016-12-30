@@ -153,8 +153,7 @@ class RssFeedsUtils
             if (count($feeds) == 0)
                 Flash::warning(trans('rssfeeds::general.status.error-no-user-feeds'));
         } else {
-            //$feeds = FeedsModel::where('feed_owner', 0)->get();
-            $feeds = FeedsModel::all();
+            $feeds = FeedsModel::where('feed_owner', 0)->get();
             if (count($feeds) == 0)
                 Flash::warning(trans('rssfeeds::general.status.error-no-feeds'));
         }
