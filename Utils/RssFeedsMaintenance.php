@@ -55,7 +55,7 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
             // -----  Create permissions and roles for the module
             $permManage = self::createPermission( 'rssfeeds-manage-feeds',
                 'RSS Feed Management',
-                'Edit/delete/modify RSS feeds.'
+                'Edit/delete/modify Public RSS feeds.'
             );
 
             self::createRole( 'rssfeeds-manager',
@@ -84,6 +84,11 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
                 'rssfeeds/add',
                 'App\Modules\RssFeeds\Http\Controllers\RssFeedsController@add',
                 $permManage );
+
+	        $routeAdd = self::createRoute( 'rssfeeds.add_personal',
+		        'rssfeeds/add_personal',
+		        'App\Modules\RssFeeds\Http\Controllers\RssFeedsController@add',
+		        $permAuthed );
 
             $routeDelete = self::createRoute( 'rssfeeds.delete',
                 'rssfeeds/delete/{id}',

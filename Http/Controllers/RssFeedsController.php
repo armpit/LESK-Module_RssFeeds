@@ -95,7 +95,7 @@ class RssFeedsController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|Redirect|\Illuminate\View\View
      */
-    public static function mine()
+    public function mine(Request $request)
     {
         $data = array();
         $page_title = trans('rssfeeds::general.page.mine.title');

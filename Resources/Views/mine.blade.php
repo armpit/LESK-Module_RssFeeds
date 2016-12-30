@@ -6,7 +6,7 @@
         <a href="{{ route('rssfeeds.manage') }}" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.manage') }}</a>
     @endif
     <a href="{{ route('rssfeeds.home') }}" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.index') }}</a>
-    <a href="{{ route('rssfeeds.add') }}" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.add') }}</a>
+    <a href="{{ route('rssfeeds.add_personal') }}" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.add') }}</a>
 
     <div class='row'>
         <div class='col-md-12'>
@@ -19,7 +19,7 @@
 
                         @foreach($data as $feed)
                             @if(isset($feed['meta']['image']) && $feed['meta']['image'] != '')
-                                <img src="{{ $feed['meta']['image'] }}" alt="{{ $feed['meta']['title'] }}" width="144px" />
+                                <img src="{{ $feed['meta']['image'] }}" alt="{{ $feed['meta']['title'] }}" width="32px" />
                             @endif
                             <b>{{ $feed['meta']['title'] }}</b>
                             @if(isset($feed['meta']['description']) && $feed['meta']['description'] != '')
