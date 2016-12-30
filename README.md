@@ -25,8 +25,31 @@ $ composer require simplepie/simplepie
 ```
 
 # Prerequisites
-
+...
 
 # Installing and activating
 Once a new module is detected by the framework, a site administrator can go to the "Modules administration" page and first 
 initialize the module, then enable it for all authorized users to have access.
+
+# Configuration
+Default values are shown. 
+
+* Enable/disable caching. (Boolean)
+```
+rssfeeds.cache_enable = true
+```
+
+* Cache storage location. (Relative to 'storage/app')
+```
+rssfeeds.cache_dir = rssfeeds_cache
+```
+
+* Cache timeout. (Integer)
+```
+rssfeeds.cache_ttl = 3600
+```
+
+* Enable/disable personal feeds for users. (Boolean)
+```
+rssfeeds.personal_enable = false
+```
