@@ -207,7 +207,7 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
             $table->increments('id');
             $table->string('feed_name')->comment('The name of the feed.')->unique();
             $table->string('feed_url')->comment('The URL of the feed.')->unique();
-            $table->boolean('feed_active')->comment('Is the feed active.')->default('true');
+            $table->boolean('feed_active')->comment('Is the feed active.')->default(1);
             $table->integer('feed_items')->comment('Number of items to retrieve.')->default(5);
             $table->integer('feed_interval')->comment('Update interval.')->default(3600);
             $table->integer('feed_owner')->comment('The user that owns the feed.')->default(0);
