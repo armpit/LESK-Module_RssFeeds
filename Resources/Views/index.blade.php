@@ -23,7 +23,7 @@
 
                         @foreach($data as $feed)
                             @if(isset($feed['meta']['image']) && $feed['meta']['image'] != '')
-                                <img src="{{ $feed['meta']['image'] }}" alt="{{ $feed['meta']['title'] }}" width="32px" />
+                                <img src="{{ $feed['meta']['image'] }}" alt="{{ $feed['meta']['title'] }}" height="64px" />
                             @endif
                             <b>{{ $feed['meta']['title'] }}</b>
                             @if(isset($feed['meta']['description']) && $feed['meta']['description'] != '')
