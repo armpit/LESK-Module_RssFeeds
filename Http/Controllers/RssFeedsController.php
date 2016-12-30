@@ -119,7 +119,7 @@ class RssFeedsController extends Controller
     {
         $page_title = trans('rssfeeds::general.page.manage.title');
         $page_description = trans('rssfeeds::general.page.manage.description');
-        $feeds = RssFeedsUtils::getFeeds()->toArray();
+        $feeds = RssFeedsUtils::getFeeds('all')->toArray();
 
         for ($i = 0; $i < count($feeds); $i++) {
             if ($feeds[$i]['feed_owner'] == 0) {

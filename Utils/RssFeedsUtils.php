@@ -149,9 +149,15 @@ class RssFeedsUtils
     public static function getFeeds($user = null)
     {
         if (isset($user)) {
-            $feeds = FeedsModel::where('feed_owner', $user)->get();
-            if (count($feeds) == 0)
-                Flash::warning(trans('rssfeeds::general.status.error-no-user-feeds'));
+        	if ($user == 'all') {
+        	    $feeds = FeedsModel::all();
+		        if (count($feeds) == 0)
+			        Flash::warning(trans('rssfeeds::general.status.error-no-feeds'));
+	        } else {
+		        $feeds = FeedsModel::where('feed_owner', $user)->get();
+		        if (count($feeds) == 0)
+			        Flash::warning(trans('rssfeeds::general.status.error-no-user-feeds'));
+	        }
         } else {
             $feeds = FeedsModel::where('feed_owner', 0)->get();
             if (count($feeds) == 0)
