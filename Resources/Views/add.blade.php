@@ -65,7 +65,7 @@
                             !!}
                             <br />
                         @else
-                            {!! Form::hidden('txtPersonal', 'true', ['id' => 'txtPersonal']) !!}
+                            {!! Form::hidden('txtPersonal', 1, ['id' => 'txtPersonal']) !!}
                         @endif
 
                         <br />

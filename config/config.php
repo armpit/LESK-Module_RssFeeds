@@ -28,8 +28,15 @@ return [
      | The cache_dir location is relative to: 'storage/app'
      |
      */
-    'rssfeeds.cache_enable' => true,
-    'rssfeeds.cache_dir'    => 'rssfeeds_cache',
-    'rssfeeds.cache_ttl'    => '3600',
+    'rssfeeds.cache_enable'     => true,
+    'rssfeeds.cache_dir'        => 'rssfeeds_cache',
+    'rssfeeds.cache_ttl'        => '3600',
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Personal Feeds
+	 |--------------------------------------------------------------------------
+	 */
+	'rssfeeds.personal_enable'  => false,
 
 ];
