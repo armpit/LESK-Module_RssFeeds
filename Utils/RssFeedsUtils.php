@@ -20,6 +20,7 @@ namespace App\Modules\RssFeeds\Utils;
 use App\Modules\RssFeeds\Models\FeedsModel;
 
 use Flash;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 
@@ -37,9 +38,15 @@ class RssFeedsUtils
     public static function initPie()
     {
         $pie = new \SimplePie();
-        $pie->enable_cache(true);
-        $pie->set_cache_duration(3600);
-        $pie->set_cache_location(storage_path().'/app/rssfeeds_cache');
+
+        if (config('rssfeeds.cache_enable')) {
+            $pie->enable_cache(true);
+            $cache_ttl = (config('rssfeeds.cache_ttl') == true) ? config('rssfeeds.cache_ttl') : 3600;
+            $pie->set_cache_duration($cache_ttl);
+            $storage = (config('rssfeeds.cache_dir') != '') ? config('rssfeeds.cache_dir') : 'rssfeeds_cache';
+            $pie->set_cache_location(storage_path().'/app/'.$storage);
+        }
+
         return $pie;
     }
 
@@ -53,30 +60,45 @@ class RssFeedsUtils
     {
         $x = 0;
         foreach ($feeds as $feed) {
+
+            if ($feed['feed_active'] != 1)
+                continue;
+
             $pie->set_feed_url($feed['feed_url']);
-            $pie->set_cache_duration($feed['feed_interval']);
+            $interval = (isset($feed['feed_interval'])) ? $feed['feed_interval'] : config('rssfeeds.cache_ttl');
+            $pie->set_cache_duration($interval);
+
             $pie->init();
             $pie->handle_content_type();
 
-            $data[$x]['meta'] = array(
-                'image' => $pie->get_image_url(),
-                'url' => $pie->get_permalink(),
-                'title' => $pie->get_title(),
-                'description' => $pie->get_description(),
-            );
+            if ($pie->error != "") {
+                $data[$x]['meta'] = array(
+                    'image' => '',
+                    'url' => $feed['feed_url'],
+                    'title' => $feed['feed_name'],
+                    'description' => $pie->error,
+                );
+            } else {
+                $data[$x]['meta'] = array(
+                    'image' => $pie->get_image_url(),
+                    'url' => $pie->get_permalink(),
+                    'title' => $pie->get_title(),
+                    'description' => $pie->get_description(),
+                );
 
-            $y = 0;
-            for ($c = 0; $c < $feed['feed_items']; $c++) {
-                $item = $pie->get_item($c);
-                if($item) {
-                    $data[$x]['items'][$y] = array(
-                        'url' => $item->get_permalink(),
-                        'title' => $item->get_title(),
-                        'description' => $item->get_description(),
-                        'pubdate' => $item->get_date('j F Y | g:i a'),
-                    );
+                $y = 0;
+                for ($c = 0; $c < $feed['feed_items']; $c++) {
+                    $item = $pie->get_item($c);
+                    if ($item) {
+                        $data[$x]['items'][$y] = array(
+                            'url' => $item->get_permalink(),
+                            'title' => $item->get_title(),
+                            'description' => $item->get_description(),
+                            'pubdate' => $item->get_date('j F Y | g:i a'),
+                        );
+                    }
+                    $y++;
                 }
-                $y++;
             }
             $x++;
         }
