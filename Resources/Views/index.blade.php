@@ -8,8 +8,13 @@
         @endif
         @if(settings()->get('rssfeeds.personal_enable'))
             <a href="{{ route('rssfeeds.mine') }}" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.mine') }}</a>
+            <br />
+        @else
+            <br />
         @endif
     @endif
+
+    <br />
 
     <div class='row'>
         <div class='col-md-12'>
