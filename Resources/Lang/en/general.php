@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     'audit-log' => [
         'category'        => 'RssFeeds',
         'msg-index'       => 'Accessed index RssFeeds: :var.',
@@ -13,27 +12,32 @@ return [
             'description'       => 'Simple RSS Feed Reader.',
             'box-title'         => 'RSS Feeds',
         ],
-        'mine'         => [
+        'mine'          => [
             'title'             => 'My Feeds',
             'description'       => 'Users personal RSS feeds.',
             'box-title'         => 'My Feeds',
         ],
-        'add'         => [
+        'add'           => [
             'title'             => 'RSS Feeds Management',
             'description'       => 'Add a new RSS feed.',
             'box-title'         => 'Add Feed',
         ],
-        'manage'         => [
+        'manage'        => [
             'title'             => 'RSS Feeds Management',
             'description'       => 'Add/delete/modify RSS feeds.',
             'box-title'         => 'Manage Feeds',
         ],
-        'delete'         => [
+        'settings'      => [
+            'title'             => 'RSS Feeds Module Settings',
+            'description'       => 'Modify module settings.',
+            'box-title'         => 'Module Settings',
+        ],
+        'delete'        => [
             'title'             => 'RSS Feeds Management',
             'description'       => 'Delete an RSS feed.',
             'box-title'         => 'Delete Feed',
         ],
-        'edit'         => [
+        'edit'          => [
             'title'             => 'RSS Feeds Management',
             'description'       => 'Edit an RSS feeds.',
             'box-title'         => 'Edit Feed',
@@ -55,6 +59,8 @@ return [
         'success-feed-deactivated'  => 'Feed deactivated.',
         'error-no-such-user'        => 'User not found.',
         'error-no-user-feeds'       => 'User has no personal feeds.',
+        'success-settings-updated'  => "Module settings updated.",
+        'error-updating-settings'   => "Could not update module settings.",
     ],
 
     'button' => [
@@ -66,11 +72,13 @@ return [
         'manage'    => 'Manage Feeds',
         'add'       => 'Add Feed',
         'mine'      => 'My Feeds',
-        'index'     => 'Feeds Home'
+        'index'     => 'Feeds Home',
+        'settings'  => 'Settings',
     ],
 
     'action' => [
         'add'       => 'Add new RSS feed.',
+        'settings'  => 'Modify Settings',
         'update'    => 'Update feed details.',
         'save'      => 'Save',
         'cancel'    => 'Cancel',

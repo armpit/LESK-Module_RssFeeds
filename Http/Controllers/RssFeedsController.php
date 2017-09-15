@@ -23,6 +23,7 @@ namespace App\Modules\RssFeeds\Http\Controllers;
 use App\Modules\RssFeeds\Models\FeedsModel;
 use App\Modules\RssFeeds\Utils\RssFeedsUtils;
 use App\Modules\RssFeeds\Http\Requests\AddFeed;
+use App\Modules\RssFeeds\Http\Requests\EditSettings;
 
 use App\Repositories\AuditRepository as Audit;
 
@@ -119,6 +120,7 @@ class RssFeedsController extends Controller
     {
         $page_title = trans('rssfeeds::general.page.manage.title');
         $page_description = trans('rssfeeds::general.page.manage.description');
+
         $feeds = RssFeedsUtils::getFeeds('all')->toArray();
 
         for ($i = 0; $i < count($feeds); $i++) {
@@ -132,6 +134,38 @@ class RssFeedsController extends Controller
         return view('rssfeeds::manage', compact('page_title', 'page_description', 'feeds'));
     }
 
+
+    /**
+     * Edit module settings.
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public static function settings(Request $request)
+    {
+        $_settings = new Setting();
+
+        $page_title = trans('rssfeeds::general.page.settings.title');
+        $page_description = trans('rssfeeds::general.page.settings.description');
+
+        $settings = array('cache_enable', 'cache_dir', 'cache_ttl', 'personal_enable');
+        foreach ($settings as $setting) {
+            Log::info('Setting: ' . $setting);
+            if ( $_settings->get('rssfeeds.'.$setting) ) {
+                Log::info('Using rssfeeds settings');
+                $options[] = array('name' => $setting, 'value' => $_settings->get('rssfeeds.'.$setting));
+            } else {
+                Log::info('Using rssfeed config');
+                $options[] = array(
+                    "name" => $setting,
+                    "value" => config("rssfeeds.".$setting)
+                );
+                Log::info("K: ". $setting ." V: ". config('rssfeeds.'.$setting));
+            }
+        }
+
+        return view('rssfeeds::settings', compact('page_title', 'page_description', 'options' ));
+    }
 
     /**
      * Add a feed.
@@ -152,7 +186,7 @@ class RssFeedsController extends Controller
      *
      * @param Request $request
      * @param Int $id
-     * @return redirect
+     * @return Illuminate\Support\Facades\Redirect
      */
     public static function delete(Request $request, $id)
     {
@@ -186,8 +220,8 @@ class RssFeedsController extends Controller
     /**
      * Process management actions.
      *
-     * @param Request $request
-     * @return redirect
+     * @param AddFeed $request
+     * @return Illuminate\Support\Facades\Redirect
      */
     public static function process(AddFeed $request)
     {
@@ -199,8 +233,25 @@ class RssFeedsController extends Controller
             if ($query['action'] == 'edit') {
                 RssFeedsUtils::updateFeed($query);
             }
+            if ($query['action'] == 'update_settings') {
+                RssFeedsUtils::updateSettings($query);
+            }
         }
         return redirect()->route('rssfeeds.manage');
+    }
+
+
+    /**
+     * Process management actions.
+     *
+     * @param EditSettings $request
+     * @return Illuminate\Support\Facades\Redirect
+     */
+    public static function process_settings(EditSettings $request)
+    {
+        $query = $request->input();
+        RssFeedsUtils::updateSettings($query);
+        return redirect()->route('rssfeeds.settings');
     }
 
 
@@ -208,7 +259,7 @@ class RssFeedsController extends Controller
      * Activate a feed.
      *
      * @param $id
-     * @return Redirect
+     * @return Illuminate\Support\Facades\Redirect
      */
     public static function activate($id)
     {
@@ -231,7 +282,7 @@ class RssFeedsController extends Controller
      * Deactivate a feed.
      *
      * @param $id
-     * @return Redirect
+     * @return Illuminate\Support\Facades\Redirect
      */
     public static function deactivate($id)
     {

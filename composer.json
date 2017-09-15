@@ -21,7 +21,7 @@
       }
     ],
     "require": {
-        "simplepie/simplepie": "^1.4"
+        "simplepie/simplepie": "^1.5"
     },
     "scripts": {
         "post-install-cmd": [

@@ -102,6 +102,7 @@ class RssFeedsUtils
             }
             $x++;
         }
+ 
         return $data;
     }
 
@@ -110,7 +111,7 @@ class RssFeedsUtils
      * Add RSS feed to the database.
      *
      * @param $query
-     * @return redirect
+     * @return Illuminate\Support\Facades\Redirect
      */
     public static function addFeed($query)
     {
@@ -131,6 +132,7 @@ class RssFeedsUtils
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-adding-feed'));
         }
+ 
         return redirect('rssfeeds/manage');
     }
 
@@ -139,7 +141,7 @@ class RssFeedsUtils
      * Update feed in the database.
      *
      * @param $query
-     * @return Redirect
+     * @return Illuminate\Support\Facades\Redirect
      */
     public static function updateFeed($query)
     {
@@ -158,7 +160,34 @@ class RssFeedsUtils
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-updating-feed'));
         }
+
         return redirect('rssfeeds/manage');
+    }
+
+
+    /**
+     * Update module settings.
+     *
+     * @param $query
+     * @return Illuminate\Support\Facades\Redirect
+     */
+    public static function updateSettings($query)
+    {
+        try {
+            $setting = new Setting();
+            $setting->set('rssfeeds.cache_enable', $query['cache_enable']);
+            $setting->set('rssfeeds.cache_dir', $query['cache_dir']);
+            $setting->set('rssfeeds.cache_ttl', $query['cache_ttl']);
+            $setting->set('rssfeeds.personal_enable', $query['personal_enable']);
+            Flash::success(trans('rssfeeds::general.status.success-settings-updated'));
+        }
+        catch (Exception $ex) {
+            Log::error('Exception updating module settings: ' . $ex->getMessage());
+            Log::error($ex->getTraceAsString());
+            Flash::error(trans('rssfeeds::general.status.error-updating-settings'));
+        }
+
+        return back()->withInput();
     }
 
 
@@ -185,6 +214,7 @@ class RssFeedsUtils
             if (count($feeds) == 0)
                 Flash::warning(trans('rssfeeds::general.status.error-no-feeds'));
         }
+
         return $feeds;
     }
 

@@ -1,6 +1,13 @@
 @extends('layouts.master')
 
 @section('content')
+    @if(Auth::user())
+        @if(Auth::user()->hasRole('rssfeeds-manager') || Auth::user()->hasRole('admins'))
+            <a href="{{ route('rssfeeds.settings') }}" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.settings') }}</a>
+            <a href="{{ route('rssfeeds.settings') }}" class="fa fa-bolt btn btn-primary"> {{ trans('rssfeeds::general.button.settings') }}</a>
+        @endif
+    @endif
+
     <div class='row'>
         <div class='col-md-12'>
             <div class="box box-primary">
