@@ -150,17 +150,10 @@ class RssFeedsController extends Controller
 
         $settings = array('cache_enable', 'cache_dir', 'cache_ttl', 'personal_enable');
         foreach ($settings as $setting) {
-            Log::info('Setting: ' . $setting);
             if ( $_settings->get('rssfeeds.'.$setting) ) {
-                Log::info('Using rssfeeds settings');
                 $options[] = array('name' => $setting, 'value' => $_settings->get('rssfeeds.'.$setting));
             } else {
-                Log::info('Using rssfeed config');
-                $options[] = array(
-                    "name" => $setting,
-                    "value" => config("rssfeeds.".$setting)
-                );
-                Log::info("K: ". $setting ." V: ". config('rssfeeds.'.$setting));
+                $options[] = array("name" => $setting, "value" => config("rssfeeds.".$setting));
             }
         }
 
