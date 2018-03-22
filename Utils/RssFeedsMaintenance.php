@@ -115,6 +115,17 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
                 'App\Modules\RssFeeds\Http\Controllers\RssFeedsController@deactivate',
                 $permManage );
 
+            $routeForce = self::createRoute( 'rssfeeds.force',
+                'rssfeeds/force/{id}',
+                'App\Modules\RssFeeds\Http\Controllers\RssFeedsController@force',
+                $permManage );
+
+            $routeUnforce = self::createRoute( 'rssfeeds.unforce',
+                'rssfeeds/unforce/{id}',
+                'App\Modules\RssFeeds\Http\Controllers\RssFeedsController@unforce',
+                $permManage );
+
+
             // ----- Create menu items
             $menuRssFeeds  = self::createMenu( 'rssfeeds.root', 'RSS Feeds', 20, 'fa fa-feed', $menuHome, false,  $routeHome, $permOpenToAll );
             $menuRssView   = self::createMenu( 'rssfeeds.home', 'View Feeds', 1, 'fa fa-bolt', $menuRssFeeds, false,  $routeHome, $permOpenToAll );
@@ -158,6 +169,8 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
             self::destroyRoute('rssfeeds.process');
             self::destroyRoute('rssfeeds.activate');
             self::destroyRoute('rssfeeds.deactivate');
+            self::destroyRoute('rssfeeds.force');
+            self::destroyRoute('rssfeeds.unforce');
 
             // ----- Destroy database or rollback migration.
             self::destroyDB();
@@ -216,6 +229,7 @@ class RssFeedsMaintenance implements ModuleMaintenanceInterface
             $table->integer('feed_items')->comment('Number of items to retrieve.')->default(5);
             $table->integer('feed_interval')->comment('Update interval.')->default(3600);
             $table->integer('feed_owner')->comment('The user that owns the feed.')->default(0);
+            $table->integer('feed_force')->comment('Force URL to be treated as a feed.')->default(0);
             //$table->timestamps();
         });
     }

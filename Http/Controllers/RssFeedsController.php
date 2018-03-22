@@ -150,10 +150,17 @@ class RssFeedsController extends Controller
 
         $settings = array('cache_enable', 'cache_dir', 'cache_ttl', 'personal_enable');
         foreach ($settings as $setting) {
+            Log::info('Setting: ' . $setting);
             if ( $_settings->get('rssfeeds.'.$setting) ) {
+                Log::info('Using rssfeeds settings');
                 $options[] = array('name' => $setting, 'value' => $_settings->get('rssfeeds.'.$setting));
             } else {
-                $options[] = array("name" => $setting, "value" => config("rssfeeds.".$setting));
+                Log::info('Using rssfeed config');
+                $options[] = array(
+                    "name" => $setting,
+                    "value" => config("rssfeeds.".$setting)
+                );
+                Log::info("K: ". $setting ." V: ". config('rssfeeds.'.$setting));
             }
         }
 
@@ -263,7 +270,7 @@ class RssFeedsController extends Controller
             Flash::success(trans('rssfeeds::general.status.success-feed-activated'));
         }
         catch (Exception $ex) {
-            Log::error('Exception deleting RSS feed: ' . $ex->getMessage());
+            Log::error('Exception activating RSS feed: ' . $ex->getMessage());
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-activating-feed'));
         }
@@ -286,9 +293,54 @@ class RssFeedsController extends Controller
             Flash::success(trans('rssfeeds::general.status.success-feed-deactivated'));
         }
         catch (Exception $ex) {
-            Log::error('Exception deleting RSS feed: ' . $ex->getMessage());
+            Log::error('Exception deactivating RSS feed: ' . $ex->getMessage());
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-deactivating-feed'));
+        }
+        return redirect()->route('rssfeeds.manage');
+    }
+
+    /**
+     * Activate forcing for a feed.
+     *
+     * @param $id
+     * @return Illuminate\Support\Facades\Redirect
+     */
+    public static function force($id)
+    {
+        try {
+            $model = FeedsModel::find($id);
+            $model->feed_force = 1;
+            $model->save();
+            Flash::success(trans('rssfeeds::general.status.success-feed-forced'));
+        }
+        catch (Exception $ex) {
+            Log::error('Exception forcing RSS feed: ' . $ex->getMessage());
+            Log::error($ex->getTraceAsString());
+            Flash::error(trans('rssfeeds::general.status.error-forcing-feed'));
+        }
+        return redirect()->route('rssfeeds.manage');
+    }
+
+
+    /**
+     * Deactivate forcing for a feed.
+     *
+     * @param $id
+     * @return Illuminate\Support\Facades\Redirect
+     */
+    public static function unforce($id)
+    {
+        try {
+            $model = FeedsModel::find($id);
+            $model->feed_force = 0;
+            $model->save();
+            Flash::success(trans('rssfeeds::general.status.success-feed-unforced'));
+        }
+        catch (Exception $ex) {
+            Log::error('Exception unforcing RSS feed: ' . $ex->getMessage());
+            Log::error($ex->getTraceAsString());
+            Flash::error(trans('rssfeeds::general.status.error-unforcing-feed'));
         }
         return redirect()->route('rssfeeds.manage');
     }

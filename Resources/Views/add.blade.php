@@ -66,6 +66,15 @@
                         !!}
                         <br />
 
+                        <b>Force Feed:</b><br />
+                        {!! Form::select(
+                            'txtForce',
+                            ['False', 'True'],
+                            '',
+                            ['style' => 'width:250px;', 'id' => 'txtForce'])
+                        !!}
+                        <br />
+
                         @if(Auth::user()->hasRole('rssfeeds-manager') || Auth::user()->hasRole('admins'))
                             <b>Personal Feed:</b><br />
                             {!! Form::select(

@@ -68,6 +68,9 @@ class RssFeedsUtils
             $interval = (isset($feed['feed_interval'])) ? $feed['feed_interval'] : config('rssfeeds.cache_ttl');
             $pie->set_cache_duration($interval);
 
+            if ($feed['feed_force'] == 1)
+                $pie->force_feed(true);
+
             $pie->init();
             $pie->handle_content_type();
 
@@ -120,6 +123,7 @@ class RssFeedsUtils
             $model->feed_name = $query['txtName'];
             $model->feed_url = $query['txtUrl'];
             $model->feed_active = $query['txtActive'];
+            $model->feed_force = $query['txtForce'];
             $model->feed_items = $query['txtItems'];
             $model->feed_interval = $query['txtInterval'];
             $model->feed_owner = ($query['txtPersonal'] == 1) ? \Auth::user()->id : '0';
@@ -132,7 +136,7 @@ class RssFeedsUtils
             Log::error($ex->getTraceAsString());
             Flash::error(trans('rssfeeds::general.status.error-adding-feed'));
         }
- 
+
         return redirect('rssfeeds/manage');
     }
 
@@ -150,6 +154,7 @@ class RssFeedsUtils
             $feed->feed_name = $query['txtName'];
             $feed->feed_url = $query['txtUrl'];
             $feed->feed_active = $query['txtActive'];
+            $feed->feed_force = $query['txtForce'];
             $feed->feed_items = $query['txtItems'];
             $feed->feed_interval = $query['txtInterval'];
             $feed->save();
@@ -200,15 +205,15 @@ class RssFeedsUtils
     public static function getFeeds($user = null)
     {
         if (isset($user)) {
-        	if ($user == 'all') {
-        	    $feeds = FeedsModel::all();
-		        if (count($feeds) == 0)
-			        Flash::warning(trans('rssfeeds::general.status.error-no-feeds'));
-	        } else {
-		        $feeds = FeedsModel::where('feed_owner', $user)->get();
-		        if (count($feeds) == 0)
-			        Flash::warning(trans('rssfeeds::general.status.error-no-user-feeds'));
-	        }
+            if ($user == 'all') {
+                $feeds = FeedsModel::all();
+                if (count($feeds) == 0)
+                    Flash::warning(trans('rssfeeds::general.status.error-no-feeds'));
+            } else {
+                $feeds = FeedsModel::where('feed_owner', $user)->get();
+                if (count($feeds) == 0)
+                    Flash::warning(trans('rssfeeds::general.status.error-no-user-feeds'));
+            }
         } else {
             $feeds = FeedsModel::where('feed_owner', 0)->get();
             if (count($feeds) == 0)
@@ -219,4 +224,3 @@ class RssFeedsUtils
     }
 
 }
-

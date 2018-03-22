@@ -55,9 +55,11 @@ Route::group(['middleware' => 'authorize'], function () {
         Route::get( '/manage',          ['as' => 'rssfeeds.manage',      'uses' => 'RssFeedsController@manage']);
         Route::get( '/settings',        ['as' => 'rssfeeds.settings',    'uses' => 'RssFeedsController@settings']);
         Route::get( '/add',             ['as' => 'rssfeeds.add',         'uses' => 'RssFeedsController@add']);
-	    Route::get( '/add_personal',    ['as' => 'rssfeeds.add_personal','uses' => 'RssFeedsController@add']);
+        Route::get( '/add_personal',    ['as' => 'rssfeeds.add_personal','uses' => 'RssFeedsController@add']);
         Route::get( '/activate/{id}',   ['as' => 'rssfeeds.activate',    'uses' => 'RssFeedsController@activate']);
         Route::get( '/deactivate/{id}', ['as' => 'rssfeeds.deactivate',  'uses' => 'RssFeedsController@deactivate']);
+        Route::get( '/force/{id}',      ['as' => 'rssfeeds.force',       'uses' => 'RssFeedsController@force']);
+        Route::get( '/unforce/{id}',    ['as' => 'rssfeeds.unforce',     'uses' => 'RssFeedsController@unforce']);
         Route::get( '/delete/{id}',     ['as' => 'rssfeeds.delete',      'uses' => 'RssFeedsController@delete']);
         Route::get( '/edit/{id}',       ['as' => 'rssfeeds.edit',        'uses' => 'RssFeedsController@edit']);
         Route::post( '/process',        ['as' => 'rssfeeds.process',     'uses' => 'RssFeedsController@process']);

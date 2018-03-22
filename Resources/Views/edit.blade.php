@@ -66,6 +66,15 @@
                         !!}
                         <br />
 
+                        <b>Force Feed:</b> <i>Forces URL to be treated as a feed. (Can fix some troublesome feeds)<br />
+                        {!! Form::select(
+                            'txtForce',
+                            ['False', 'True'],
+                            $data['feed_force'],
+                            ['style' => 'width:250px;', 'id' => 'txtForce'])
+                        !!}
+                        <br />
+
                         <br />
                         <a class="btn btn-default btn-sm fa fa-floppy-o" href="#" onclick="document.forms['frmEdit'].action = '{{ route('rssfeeds.process') }}';  document.forms['frmEdit'].submit(); return false;" title="{{ trans('rssfeeds::general.action.edit') }}">
                             {{ trans('rssfeeds::general.action.save') }}

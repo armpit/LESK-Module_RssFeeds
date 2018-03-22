@@ -32,7 +32,8 @@ class RssFeedsDatabaseSeeder extends Seeder
         DB::table('mod_rssfeeds')->insert([
             'feed_name'      => 'Undeadly',
             'feed_url'       => 'http://undeadly.org/cgi?action=rss',
-            'feed_active'    => 'true',
+            'feed_active'    => '1',
+            'feed_force'     => '0',
             'feed_items'     => 5,
             'feed_interval'  => 360,
             'feed_lastcheck' => date_timestamp_get(date_create()),
@@ -40,7 +41,8 @@ class RssFeedsDatabaseSeeder extends Seeder
         DB::table('mod_rssfeeds')->insert([
             'feed_name'      => 'Laravel News',
             'feed_url'       => 'http://feed.laravel-news.com/',
-            'feed_active'    => 'true',
+            'feed_active'    => '1',
+            'feed_force'     => '0',
             'feed_items'     => 5,
             'feed_interval'  => 360,
             'feed_lastcheck' => date_timestamp_get(date_create()),
